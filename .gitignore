@@ -1,0 +1,12 @@
+node_modules/
+
+#IDE
+.vscode/
+
+#Environment variables
+.env
+pnpm-lock.yaml
+
+#Builds
+dist/
+

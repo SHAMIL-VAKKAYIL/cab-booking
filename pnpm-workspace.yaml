@@ -1,0 +1,11 @@
+packages:
+  - "auth-service"
+  - "driver-service"
+  - "gateway"
+  - "matching-service"
+  - "notification-service"
+  - "payment-service"
+  - "pricing-service"
+  - "rider-service"
+  - "trip-service"
+  - "packages/*"
