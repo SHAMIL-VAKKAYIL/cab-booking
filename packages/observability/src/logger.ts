@@ -4,12 +4,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const logger = pino({
+
+export const createLogger = (serviceName: string) => {
+  return pino({
     level: process.env.LOG_LEVEL || 'info',
-    transport: process.env.NODE_ENV === 'production' ? undefined : {
+    base: { service: serviceName },
+
+    ...(process.env.NODE_ENV !== 'production' && {
+      transport: {
         target: 'pino-pretty',
-        options: {
-            colorize: true,
-        },
-    },
-});
+        options: { colorize: true }
+      }
+    })
+  });
+};

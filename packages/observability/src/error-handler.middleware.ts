@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from './logger';
+import { createLogger } from './logger';
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+    const logger = createLogger('error-handler');
     logger.error(
         {
             err,
