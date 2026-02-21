@@ -4,6 +4,7 @@ dotenv.config()
 
 export const config = {
     port: parseInt(process.env.PORT || '4000', 10),
+    nodeEnv: process.env.NODE_ENV || 'development',
 
     db: {
         host: process.env.DB_HOST! ,
@@ -13,8 +14,8 @@ export const config = {
         port: Number(process.env.DB_PORT),
     },
   jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET || 'supersecret',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'supersecret',
+    accessSecret: process.env.JWT_ACCESS_SECRET || 'supesfsrsecretdfsf',
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'supesdfsdrsecretsfsfs',
     accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },

@@ -101,3 +101,13 @@ export const logoutHandler = async (req: express.Request, res: express.Response)
     }
 }
 
+// export const getCurrentUserHandler = async (req: express.Request, res: express.Response) => {
+//     try {
+//         const getUser
+        
+//     } catch (error) {
+//         logger.error({ error }, 'Failed to get current user');
+//         res.status(500).json({ error: 'Failed to get current user' });
+//     }
+// }
+
