@@ -13,9 +13,11 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
+    "@cab/events": "workspace:*",
+    "@cab/messaging": "workspace:*",
     "@cab/observability": "workspace:*",
-    "@cab/messaging":"workspace:*",
     "bcrypt": "^6.0.0",
+    "crypto": "^1.0.1",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",

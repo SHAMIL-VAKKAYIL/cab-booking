@@ -2,17 +2,16 @@ import { app } from './app';
 import { config } from './config';
 import { logger } from './config/logger';
 import { pool } from './db/pool';
+import { connectProducer } from '@cab/messaging'
 
 const PORT = config.port;
 
-
-
 const start = async () => {
     try {
-        await pool.connect();
+        await connectProducer()
         
+        await pool.connect();
         console.log("Database connected");
-
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

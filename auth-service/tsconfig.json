@@ -7,7 +7,9 @@
     "strict": true,
     "esModuleInterop": true,
     "paths": {
-      "@cab/observability":["../packages/observability"]
+      "@cab/observability":["../packages/observability"],
+      "cab/events":["../packages/events"],
+      "cab/messaging":["../packages/messaging"]
     }
   }
 

@@ -1,19 +1,26 @@
+import express from 'express'
+// import {} from '@cab/messaging'
 import { logger } from "../../config/logger";
 import { LoginRequest, RegisterRequest } from "../../types/authType";
-import express from 'express'
 import { AuthService } from "./auth.service";
 import { createAccessToken, createRefreshToken, verifyRefreshToken } from "../../utils/token";
 import { config } from "../../config";
+import { publishUserCreated } from '../../events/publishers/user-created';
 
 
 
 export const registerHandler = async (req: express.Request, res: express.Response) => {
     try {
         const { email, password, role }: RegisterRequest = req.body
-
         const userRegister = await AuthService.prototype.register({ email, password, role })
 
         logger.info({ email: userRegister.email }, 'User registered successfully');
+
+        await publishUserCreated({
+            id: userRegister.id,
+            email: userRegister.email,
+            role: userRegister.role as "rider" | "driver",
+        })
 
         const accessToken = createAccessToken({ userId: userRegister.id, email: userRegister.email, role: userRegister.role || 'rider' })
         const refreshToken = createRefreshToken({ userId: userRegister.id, role: userRegister.role || 'rider', email: userRegister.email })
@@ -24,6 +31,8 @@ export const registerHandler = async (req: express.Request, res: express.Respons
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
+
+
 
         res.status(201).json({ message: 'User registered successfully', accessToken });
     } catch (error) {

@@ -22,8 +22,7 @@ export class AuthService {
                 passwordHash: passwordHash,
                 role: registerRequest.role,
             }).returning()
-
-            return newUser[0]
+      return newUser[0]
         } catch (error) {
             logger.error({ error }, 'User registration failed');
             throw new Error('Failed to register user');
@@ -32,7 +31,7 @@ export class AuthService {
 
     async login(email: string, password: string) {
         try {
-            const existingUser =await db.select().from(users).where(eq(users.email,email)).execute()
+            const existingUser = await db.select().from(users).where(eq(users.email, email)).execute()
             if (existingUser.length === 0) {
                 logger.warn({ email }, 'Attempt to login with non-existent email');
                 throw new Error('Invalid email or password')
@@ -45,7 +44,7 @@ export class AuthService {
                 throw new Error('Invalid email or password')
             }
             return user
-            
+
         } catch (error) {
             logger.error({ error }, 'User login failed');
             throw new Error('Failed to login user');

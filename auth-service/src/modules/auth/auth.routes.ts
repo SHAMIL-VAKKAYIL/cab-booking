@@ -3,7 +3,6 @@ import { loginHandler, logoutHandler, refreshTokenHandler, registerHandler } fro
 
 const authRouter = express.Router()
 
-
 authRouter.post('/register', registerHandler);
 authRouter.post('/login', loginHandler);
 authRouter.post('/logout', logoutHandler);
