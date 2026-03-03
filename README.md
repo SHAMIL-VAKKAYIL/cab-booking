@@ -27,7 +27,6 @@ Account status (ACTIVE, BLOCKED)
 
 # API Gateway
 
-# tonight
 <!-- common package creation and table creation m register login  -->
 
 ## for logging we using pino ##
