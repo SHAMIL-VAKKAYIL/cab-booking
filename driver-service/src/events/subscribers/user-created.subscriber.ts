@@ -1,8 +1,6 @@
 import { createConsumer } from '@cab/messaging'
 import { Topics, UserCreatedEvent } from '@cab/events'
-import { db } from '../../db'
-import { Driver } from '../../db/schema'
-import { eq } from 'drizzle-orm'
+import { DriverService } from '../../modules/driver/driver.service'
 
 
 export const startUserCreatedSubscriber = async () => {
@@ -13,7 +11,10 @@ export const startUserCreatedSubscriber = async () => {
         eachMessage: async ({ value }) => {
             const event = value as UserCreatedEvent
             console.log(event);
-
+            if (event.data.role !== "driver") {
+                return;
+            }
+            await DriverService.prototype.createDriver(event.data)
         }
     })
 }
