@@ -23,7 +23,7 @@ export const driverAvailabilityEnum = pgEnum("driver_availability", [
     "ON_TRIP",
 ]);
 
-export const Driver = pgTable("drivers", {
+export const driver = pgTable("drivers", {
     id: uuid('id').primaryKey().defaultRandom(),
 
     user_id: uuid('user_id').notNull(),
