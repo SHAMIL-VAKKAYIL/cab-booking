@@ -15,6 +15,13 @@
       "when": 1772588034743,
       "tag": "0001_flawless_shape",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772761646699,
+      "tag": "0002_neat_living_lightning",
+      "breakpoints": true
     }
   ]
 }

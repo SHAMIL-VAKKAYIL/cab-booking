@@ -25,7 +25,7 @@ export const driverAvailabilityEnum = pgEnum("driver_availability", [
 
 export const driver = pgTable("drivers", {
     id: uuid('id').primaryKey().defaultRandom(),
-
+    name: varchar('name', { length: 100 }).notNull(),
     user_id: uuid('user_id').notNull(),
     //! license details
     licenseNumber: varchar('license_number', { length: 100 }).notNull(),
