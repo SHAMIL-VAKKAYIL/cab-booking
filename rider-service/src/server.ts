@@ -2,13 +2,15 @@ import { app } from "./app";
 import { config } from "./config";
 import { logger } from "./config/logger";
 import { pool } from "./db/pool";
+import { startUserCreatedConsumer } from "./events/user-created.consumer";
 
 
 
 const PORT =config.port;
 const start =async()=>{
     try {
-        
+            await startUserCreatedConsumer()
+            
         await pool.connect()
         logger.info({},'database connected')
         
