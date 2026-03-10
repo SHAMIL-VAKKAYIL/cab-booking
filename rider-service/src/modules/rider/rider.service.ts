@@ -3,6 +3,7 @@ import { rating, rideHistory, rider } from '../../db/schema'
 import { eq, count, avg } from 'drizzle-orm'
 import { logger } from '../../config/logger'
 import { CreateRatingInput, CreateRideHistoryInput, InitialRiderData, RiderProfile } from '../../types'
+import { publishDriverRated } from '../../events/producer/rating-added.producer'
 
 
 const DEFAULT_LIMIT = 10
@@ -158,6 +159,12 @@ export class RiderService {
 
             // todo
             // publish event so driver-service updates driver's average rating
+            await publishDriverRated({
+                driverId,
+                riderId,
+                tripId,
+                score,
+            })
 
             logger.info({ tripId }, "rating recorded successfully")
             return newRating

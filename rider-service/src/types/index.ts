@@ -30,3 +30,11 @@ export interface consumerMessage {
     partition: number;
     offset: string;
 }
+
+export interface CreateRatingInput {
+  riderId:  string
+  driverId: string
+  tripId:   string
+  score:    number
+  comment?: string
+}
