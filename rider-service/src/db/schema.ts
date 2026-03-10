@@ -37,3 +37,13 @@ export const rideHistory = pgTable('ride_history', {
   completedAt:    timestamp('completed_at', { withTimezone: true }),
   createdAt:      timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
+
+export const rating = pgTable('ratings',{
+  id:uuid('id').primaryKey().defaultRandom(),
+  riderId:uuid('rider_id').notNull().references(()=>rider.id),
+  driverId:uuid('driver_id').notNull(),
+  tripId:uuid('trip_id').notNull().unique(),
+  score:integer('score').notNull(),
+  comment:text('comment'),
+  createdAt:timestamp('created_at',{withTimezone:true}).defaultNow().notNull()
+})
