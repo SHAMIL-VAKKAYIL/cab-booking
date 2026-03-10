@@ -8,3 +8,25 @@ export interface RiderProfile {
     userId: string;
     phone: string;
 }
+
+export interface CreateRideHistoryInput {
+  riderId: string
+  tripId: string
+  driverId: string
+  pickupAddress: string
+  dropoffAddress: string
+  fare: string
+  distanceKm?: string
+  durationMins?: number
+  status: 'COMPLETED' | 'CANCELLED'
+  vehicleType?: string
+  startedAt?: Date
+  completedAt?: Date
+}
+
+export interface consumerMessage {
+    key: string | null;
+    value: any;
+    partition: number;
+    offset: string;
+}
