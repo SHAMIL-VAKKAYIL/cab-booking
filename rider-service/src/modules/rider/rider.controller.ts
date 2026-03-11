@@ -125,3 +125,38 @@ export const deleteSavedPlace = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+
+export const cancelRide = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const { rideId } = req.params as { rideId: string };
+    const { reason } = req.body;
+
+    const result = await riderService.cancelRide({ rideId, reason, riderId });
+    res.status(200).json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const requestRide = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const { pickupLat, pickupLng, pickupAddress, dropoffLat, dropoffLng, dropoffAddress, vehicleType } = req.body;
+
+    const result = await riderService.requestRide({
+      riderId,
+      pickupLat,
+      pickupLng,
+      pickupAddress,
+      dropoffLat,
+      dropoffLng,
+      dropoffAddress,
+      vehicleType,
+    });
+    res.status(200).json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
