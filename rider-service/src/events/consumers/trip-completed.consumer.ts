@@ -1,5 +1,5 @@
 import { createConsumer } from '@cab/messaging';
-import { Topics, UserCreatedEvent } from '@cab/events';
+import { Topics } from '@cab/events';
 import { RiderService } from '../../modules/rider/rider.service';
 import { logger } from '../../config/logger';
 import { consumerMessage } from '../../types';
