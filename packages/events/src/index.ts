@@ -1,2 +1,4 @@
 export * from './topics'
-export * from './user.events'
+export * from './events/user.events'
+export * from './events/ride.events'
+export * from './events/rating.events'
