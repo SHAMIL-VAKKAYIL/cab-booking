@@ -83,3 +83,45 @@ export const getMyRating = async (req: Request, res: Response, next: NextFunctio
     next(err);
   }
 };
+
+export const savePlace = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const { label, alias, address, latitude, longitude } = req.body;
+
+    const result = await riderService.savePlace({
+      riderId,
+      label,
+      alias,
+      address,
+      latitude,
+      longitude,
+    });
+
+    res.status(200).json({ data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getSavedPlaces = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const result = await riderService.getSavePlaces(riderId);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteSavedPlace = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const { placeId } = req.params as { placeId: string };
+
+    const result = await riderService.deleteSavedPlace(riderId, placeId);
+    res.status(200).json({ data: result });
+  } catch (error) {
+    next(error);
+  }
+};

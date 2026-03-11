@@ -1,10 +1,11 @@
 import { db } from '../../db';
-import { rating, rideHistory, rider } from '../../db/schema';
+import { rating, rideHistory, rider, savedPlaces } from '../../db/schema';
 import { eq, count, avg } from 'drizzle-orm';
 import { logger } from '../../config/logger';
 import {
   CreateRatingInput,
   CreateRideHistoryInput,
+  CreateSavedPlaceInput,
   InitialRiderData,
   RiderProfile,
 } from '../../types';
@@ -37,7 +38,7 @@ export class RiderService {
       logger.info({ email }, 'rider created');
     } catch (error) {
       logger.error({ error }, 'rider creation faild');
-      throw new Error('Failed to rider creation');
+      throw new Error('Failed to rider creation', { cause: error });
     }
   }
   async updateRiderProfile(data: RiderProfile) {
@@ -61,7 +62,7 @@ export class RiderService {
       return updatedRider;
     } catch (error) {
       logger.error({ error }, 'rider profile update faild');
-      throw new Error('Failed to rider profile update');
+      throw new Error('Failed to rider profile update', { cause: error });
     }
   }
   async getProfile(userId: string) {
@@ -206,6 +207,80 @@ export class RiderService {
       };
     } catch (error) {
       logger.error({ error }, 'Failed to get rider rating');
+      throw error;
+    }
+  }
+
+  async savePlace(data: CreateSavedPlaceInput) {
+    try {
+      const { riderId, label, alias, address, latitude, longitude } = data;
+
+      if (label === 'HOME' || label === 'WORK') {
+        const existingPlace = await db
+          .select()
+          .from(savedPlaces)
+          .where(eq(savedPlaces.riderId, riderId));
+        if (existingPlace.length > 0) {
+          const [updated] = await db
+            .update(savedPlaces)
+            .set({
+              alias,
+              address,
+              latitude: latitude.toString(),
+              longitude: longitude.toString(),
+            })
+            .where(eq(savedPlaces.id, existingPlace[0].id))
+            .returning();
+          logger.info({ updated }, 'place updated successfully');
+          return updated;
+        }
+      }
+      const [place] = await db
+        .insert(savedPlaces)
+        .values({
+          riderId,
+          label,
+          alias: alias ?? '',
+          address,
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          createdAt: new Date(),
+        })
+        .returning();
+      logger.info({ place }, 'place saved successfully');
+      return place;
+    } catch (error) {
+      logger.error({ error }, 'Failed to save place');
+      throw error;
+    }
+  }
+
+  async getSavePlaces(riderId: string) {
+    try {
+      const places = await db.select().from(savedPlaces).where(eq(savedPlaces.riderId, riderId));
+      return places;
+    } catch (error) {
+      logger.error({ error }, 'Failed to get saved places');
+      throw error;
+    }
+  }
+  async deleteSavedPlace(riderId: string, placeId: string) {
+    try {
+      const existingPlace = await db.select().from(savedPlaces).where(eq(savedPlaces.id, placeId));
+      if (existingPlace.length === 0) {
+        logger.info({ existingPlace }, 'place not found');
+        throw new Error('Place not found');
+      }
+      if (existingPlace[0].riderId !== riderId) {
+        logger.info({ existingPlace }, 'Forbidden');
+        throw new Error('Forbidden');
+      }
+
+      const [deleted] = await db.delete(savedPlaces).where(eq(savedPlaces.id, placeId)).returning();
+      logger.info({ deleted }, 'place deleted successfully');
+      return deleted;
+    } catch (error) {
+      logger.error({ error }, 'Failed to delete place');
       throw error;
     }
   }
