@@ -26,7 +26,7 @@ export interface CreateRideHistoryInput {
 
 export interface consumerMessage {
   key: string | null;
-  value: any;
+  value: CreateRideHistoryInput;
   partition: number;
   offset: string;
 }
@@ -37,4 +37,13 @@ export interface CreateRatingInput {
   tripId: string;
   score: number;
   comment?: string;
+}
+
+export interface CreateSavedPlaceInput {
+  riderId: string;
+  label: 'HOME' | 'WORK' | 'OTHER';
+  alias?: string;
+  address: string;
+  latitude: number;
+  longitude: number;
 }
