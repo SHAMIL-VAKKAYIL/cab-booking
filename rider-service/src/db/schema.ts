@@ -63,3 +63,16 @@ export const rating = pgTable('ratings', {
   comment: text('comment'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const savedPlaces = pgTable('saved_places', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  riderId: uuid('rider_id')
+    .notNull()
+    .references(() => rider.id),
+  label: savedPlacesLabel('label').notNull(),
+  alias: varchar('alias', { length: 100 }),
+  address: varchar('address').notNull(),
+  latitude: numeric('latitude').notNull(),
+  longitude: numeric('longitude').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
