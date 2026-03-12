@@ -3,7 +3,7 @@ import { logger } from './config/logger';
 import { errorHandler } from '@cab/observability';
 import { riderRouter } from './modules/rider/rider.routes';
 
-export const app = express();
+export const app: express.Application = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -14,4 +14,4 @@ app.use((req, _, next) => {
 
 app.use('/api/rider', riderRouter);
 
-app.use(errorHandler(logger));
+app.use(errorHandler);
