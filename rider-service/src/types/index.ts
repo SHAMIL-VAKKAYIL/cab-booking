@@ -47,3 +47,20 @@ export interface CreateSavedPlaceInput {
   latitude: number;
   longitude: number;
 }
+
+export interface RequestRideInput {
+  riderId: string
+  pickupLat: number
+  pickupLng: number
+  pickupAddress: string
+  dropoffLat: number
+  dropoffLng: number
+  dropoffAddress: string
+  vehicleType?: 'ECONOMY' | 'PREMIUM'
+}
+
+export interface CancelRideInput {
+  riderId: string
+  rideId: string
+  reason?: string
+}
