@@ -2,7 +2,7 @@ import express from 'express'
 import { logger } from './config/logger'
 import { errorHandler } from '@cab/observability'
 import { driverRouter } from './modules/driver/driver.routes'
-export const app = express()
+export const app: express.Application = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
