@@ -10,4 +10,8 @@ export interface DriverProfile {
     vehicleModel: string;
     vehiclePlate: string;
     userId: string;
+    email: string;
+    phone: string;
+    vehicleType: "ECONOMY" | "PREMIUM";
+
 }
