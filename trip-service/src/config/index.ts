@@ -11,7 +11,7 @@ export const config = {
     password: process.env.DB_PASSWORD!,
     port: Number(process.env.DB_PORT),
   },
-   redis: {
+  redis: {
     url: process.env.REDIS_URL || 'redis://localhost:6379'
   }
 };

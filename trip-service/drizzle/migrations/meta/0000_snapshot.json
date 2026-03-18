@@ -1,0 +1,191 @@
+{
+  "id": "2ccbc36e-c50a-43cd-bec8-ec9efc6132c9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.trips": {
+      "name": "trips",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "rider_id": {
+          "name": "rider_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "driver_id": {
+          "name": "driver_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "trip_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'REQUESTED'"
+        },
+        "pickup_address": {
+          "name": "pickup_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pickup_lat": {
+          "name": "pickup_lat",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pickup_lng": {
+          "name": "pickup_lng",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dropoff_address": {
+          "name": "dropoff_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dropoff_lat": {
+          "name": "dropoff_lat",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dropoff_lng": {
+          "name": "dropoff_lng",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicle_type": {
+          "name": "vehicle_type",
+          "type": "vehicle_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ECONOMY'"
+        },
+        "estimated_fare": {
+          "name": "estimated_fare",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "final_fare": {
+          "name": "final_fare",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "distance_km": {
+          "name": "distance_km",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_mins": {
+          "name": "duration_mins",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.trip_status": {
+      "name": "trip_status",
+      "schema": "public",
+      "values": [
+        "REQUESTED",
+        "MATCHED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "CANCELLED"
+      ]
+    },
+    "public.vehicle_type": {
+      "name": "vehicle_type",
+      "schema": "public",
+      "values": [
+        "ECONOMY",
+        "PREMIUM"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

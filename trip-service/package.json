@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1", "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/express": "^5.0.6",
+    "@types/express": "^5.0.6", 
     "@types/pg": "^8.18.0",
     "drizzle-kit": "^0.31.9",
     "eslint": "^10.0.3",
