@@ -5,10 +5,7 @@ import { redis } from '../../redis'
 import { logger } from '../../config/logger'
 import { CreateTripInput, CompleteTripInput, CancelTripInput } from '../../types'
 import {
-    publishTripCreateReply,
-    publishTripStarted,
-    publishTripCompleted,
-    publishTripCancelled
+    publishTripCreateReply, publishTripStarted, publishTripCompleted, publishTripCancelled
 } from '../../events/producer/trip.producer'
 
 const LOCATION_UPDATE_SEC = 30
