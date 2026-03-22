@@ -1,0 +1,72 @@
+export interface TripCreateReplyEvent {
+  event: "TRIP_CREATE_REPLY";
+  data: {
+    correlationId: string;
+    tripId: string;
+    success: boolean;
+    reason?: string;
+    occurredAt: string;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+
+export interface TripStartedEvent {
+  event: "TRIP_STARTED";
+  data: {
+    tripId: string;
+    riderId: string;
+    driverId: string;
+    startedAt: string;
+    occurredAt: string;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+
+export interface TripCompletedEvent {
+  event: "TRIP_COMPLETED";
+  data: {
+    tripId: string;
+    riderId: string;
+    driverId: string;
+    fare: number;
+    distanceKm: number;
+    durationMins: number;
+    pickupAddress: string;
+    dropoffAddress: string;
+    vehicleType: string;
+    startedAt: string;
+    completedAt: string;
+    occurredAt: string;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+
+export interface TripCancelledEvent {
+  event: "TRIP_CANCELLED";
+  data: {
+    tripId: string;
+    riderId: string;
+    driverId?: string;
+    reason: string;
+    cancelledBy: string;
+    cancelledAt: string;
+    occurredAt: string;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}

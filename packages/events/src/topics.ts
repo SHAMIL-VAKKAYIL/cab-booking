@@ -4,7 +4,13 @@ export const Topics = {
   RIDER_PROFILE_CREATE: 'rider.profile.create',
   BOOKING_CREATED: 'booking.created',
   TRIP_COMPLETED: 'trip.completed',
+  TRIP_CANCELLED: 'trip.cancelled',
+  TRIP_CREATE_REPLY: 'trip.create.reply',
+  TRIP_STARTED: 'trip.started',
   DRIVER_RATED: 'driver.rated',
   RIDE_REQUESTED: 'ride.requested',
   RIDE_CANCELLED: 'ride.cancelled',
+  DRIVER_ONLINE: 'driver.online',
+  DRIVER_OFFLINE: 'driver.offline',
+
 } as const;
