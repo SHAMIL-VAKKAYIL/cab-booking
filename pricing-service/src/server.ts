@@ -3,7 +3,7 @@ import { app } from './app'
 import { config } from './config'
 import { logger } from './config/logger'
 import { connectProducer } from '@cab/messaging'
-import { startFareCalculateConsumer } from './events/consumers/fare-calculate.consumer'
+import { startFareCalculateConsumer } from './events/consumer/fare-calculate.consumer'
 
 const start = async () => {
   try {
