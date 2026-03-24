@@ -1,17 +1,30 @@
-export interface InitialDriverData {
-    email: string
-    userId: string;
+export interface CreateDriverInput {
+  userId: string
+  email:  string
 }
 
-export interface DriverProfile {
-    name: string;
-    licenseNumber: string;
-    licenseExpiry: Date;
-    vehicleModel: string;
-    vehiclePlate: string;
-    userId: string;
-    email: string;
-    phone: string;
-    vehicleType: "ECONOMY" | "PREMIUM";
+export interface UpdateDriverProfileInput {
+  userId:        string
+  name:          string
+  phone:         string
+  licenseNumber: string
+  licenseExpiry: Date
+}
 
+export interface UpdateVehicleInput {
+  userId:       string
+  vehicleModel: string
+  vehiclePlate: string
+  vehicleType:  'ECONOMY' | 'PREMIUM'
+}
+
+export interface ToggleAvailabilityInput {
+  userId: string
+  lat:    number
+  lng:    number
+}
+
+export interface UpdateRatingInput {
+  driverId: string
+  score:    number
 }
