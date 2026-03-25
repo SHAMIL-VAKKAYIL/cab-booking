@@ -13,7 +13,7 @@ import {
 import {
   publishDriverOnline,
   publishDriverOffline,
-} from "../../events/producers/driver.producers";
+} from "../../events/producer/driver.producer";
 
 export class DriverService {
   async createDriver(data: CreateDriverInput) {
