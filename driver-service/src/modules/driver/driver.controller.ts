@@ -1,20 +1,73 @@
-import express from "express";
-import { logger } from "../../config/logger";
-import { DriverService } from "./driver.service";
-
+import { Request, Response, NextFunction } from 'express'
+import { DriverService } from './driver.service'
 
 const driverService = new DriverService()
 
-export const profileCreation = async (req: express.Request, res: express.Response) => {
-    const { name, licenseNumber, licenseExpiry, vehicleModel, vehiclePlate, email, phone, vehicleType } = req.body
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
     const userId = req.headers['user-id'] as string
-    try {
-        const driverData = await driverService.updateDriverProfile({ name, licenseNumber, licenseExpiry, vehicleModel, vehiclePlate, userId, email, phone, vehicleType })
-        return res.status(200).json({ message: "Driver profile created successfully", driverData });
+    const result = await driverService.getProfile(userId)
+    res.status(200).json({ data: result })
+  } catch (err) {
+    next(err)
+  }
+}
 
-    } catch (error) {
-        logger.error({ error }, "Error in driver profile creation");
-        return res.status(500).json({ message: "Failed to create driver profile" });
-    }
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.headers['user-id'] as string
+    const { name, phone, licenseNumber, licenseExpiry } = req.body
 
+    const result = await driverService.updateProfile({
+      userId,
+      name,
+      phone,
+      licenseNumber,
+      licenseExpiry: new Date(licenseExpiry)
+    })
+
+    res.status(200).json({ data: result })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const updateVehicle = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.headers['user-id'] as string
+    const { vehicleModel, vehiclePlate, vehicleType } = req.body
+
+    const result = await driverService.updateVehicle({
+      userId,
+      vehicleModel,
+      vehiclePlate,
+      vehicleType
+    })
+
+    res.status(200).json({ data: result })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const toggleAvailability = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.headers['user-id'] as string
+    const { lat, lng } = req.body
+
+    const result = await driverService.toggleAvailability({ userId, lat, lng })
+    res.status(200).json({ data: result })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const getRating = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.headers['user-id'] as string
+    const result = await driverService.getRating(userId)
+    res.status(200).json({ data: result })
+  } catch (err) {
+    next(err)
+  }
 }
