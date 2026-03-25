@@ -1,26 +1,35 @@
-import { app } from "./app";
-import { config } from "./config";
-import { logger } from "./config/logger";
-import { pool } from "./db/pool";
-import { startUserCreatedSubscriber } from "./events/subscribers/user-created.subscriber";
+import 'dotenv/config'
+import { app } from './app'
+import { config } from './config'
+import { logger } from './config/logger'
+import { pool } from './db/pool'
+import { connectRedis } from './lib/redis'
+import { connectProducer } from '@cab/messaging'
+import { startUserCreatedSubscriber } from './events/consumer/user-created.consumer'
+import { startDriverRatedConsumer }   from './events/consumer/driver-rated.consumer'
 
-
-
-
-const PORT = config.port;
 const start = async () => {
-    try {
-        await startUserCreatedSubscriber()
+  try {
+    await pool.connect()
+    logger.info('Database connected')
 
-        await pool.connect()
-        logger.info({}, 'database connected')
+    await connectRedis()
+    logger.info('Redis connected')
 
-        app.listen(PORT, () => {
-            logger.info({}, `server running on port ${PORT}`)
-        })
-    } catch (error) {
-        logger.error({ error }, 'connection faild')
-    }
+    await connectProducer()
+    logger.info('Kafka producer connected')
+
+    await startUserCreatedSubscriber()
+    await startDriverRatedConsumer()
+    logger.info('Kafka consumers started')
+
+    app.listen(config.port, () => {
+      logger.info(`Driver service running on port ${config.port}`)
+    })
+  } catch (error) {
+    logger.error({ error }, 'Failed to start driver service')
+    process.exit(1)
+  }
 }
 
 start()
