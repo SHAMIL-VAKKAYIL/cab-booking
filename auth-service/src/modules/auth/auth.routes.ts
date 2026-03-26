@@ -3,10 +3,10 @@ import { loginHandler, logoutHandler, refreshTokenHandler, registerHandler } fro
 
 const authRouter = express.Router()
 
-authRouter.post('/register', registerHandler);
-authRouter.post('/login', loginHandler);
-authRouter.post('/logout', logoutHandler);
-authRouter.post('/refresh-token', refreshTokenHandler)
+authRouter.post('/v1/register', registerHandler);
+authRouter.post('/v1/login', loginHandler);
+authRouter.post('/v1/logout', logoutHandler);
+authRouter.post('/v1/refresh-token', refreshTokenHandler)
 
 // authRouter.get('/me', )
 
