@@ -25,15 +25,13 @@ app.use(
   }),
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(proxyRouter)
+app.use(proxyRouter);
 
 app.use(errorHandler);
 
 app.listen(config.port, () => {
   logger.info(`Gateway running on PORT ${config.port}`);
-});
+}); 
 
 export default app;
