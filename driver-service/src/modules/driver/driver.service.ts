@@ -51,9 +51,15 @@ export class DriverService {
 
     if (existing.length === 0) throw new Error("Driver not found");
 
+    const updateData: Record<string, any> = { updatedAt: new Date() };
+    if (name !== undefined) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+    if (licenseNumber !== undefined) updateData.licenseNumber = licenseNumber;
+    if (licenseExpiry !== undefined) updateData.licenseExpiry = licenseExpiry;
+
     const [updated] = await db
       .update(driver)
-      .set({ name, phone, licenseNumber, licenseExpiry, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(driver.user_id, userId))
       .returning();
 
@@ -63,20 +69,24 @@ export class DriverService {
 
   async updateVehicle(data: UpdateVehicleInput) {
     const { userId, vehicleModel, vehiclePlate, vehicleType } = data;
-
     const existing = await db
       .select()
       .from(driver)
       .where(eq(driver.user_id, userId));
-
+    logger.info(existing);
     if (existing.length === 0) throw new Error("Driver not found");
+    logger.info("driver found");
+    const updateData: Record<string, any> = { updatedAt: new Date() };
+    if (vehicleModel !== undefined) updateData.vehicleModel = vehicleModel;
+    if (vehiclePlate !== undefined) updateData.vehiclePlate = vehiclePlate;
+    if (vehicleType !== undefined) updateData.vehicleType = vehicleType;
 
     const [updated] = await db
       .update(driver)
-      .set({ vehicleModel, vehiclePlate, vehicleType, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(driver.user_id, userId))
       .returning();
-
+    logger.info(updated);
     logger.info({ userId }, "Vehicle info updated");
     return updated;
   }
