@@ -4,7 +4,7 @@ import { driverRouter } from './modules/driver/driver.routes'
 const app:express.Application = express()
 
 app.use(express.json())
-app.use('/api/driver', driverRouter)
+app.use('/', driverRouter)
 
 app.use((err:any, req:any, res:any, next:any) => {
   if (err.message === 'Driver not found') {
