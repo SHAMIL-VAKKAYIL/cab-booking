@@ -12,6 +12,6 @@ app.use((req, _, next) => {
   next();
 });
 
-app.use('/api/rider', riderRouter);
+app.use('/', riderRouter);
 
 app.use(errorHandler);
