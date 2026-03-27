@@ -28,31 +28,29 @@ export const getRiderProfile = async (req: Request, res: Response) => {
   }
 };
 
-export const rideHistoryController = {
-  async getHistory(req: Request, res: Response, next: NextFunction) {
-    try {
-      const riderId = req.headers['user-id'] as string;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+export const getHistory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-      const result = await riderService.getHistory(riderId, page, limit);
-      res.status(200).json(result);
-    } catch (err) {
-      next(err);
-    }
-  },
+    const result = await riderService.getHistory(riderId, page, limit);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+};
 
-  async getTripDetail(req: Request, res: Response, next: NextFunction) {
-    try {
-      const riderId = req.headers['user-id'] as string;
-      const { tripId } = req.params as { tripId: string };
+export const getTripDetail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const riderId = req.headers['user-id'] as string;
+    const { tripId } = req.params as { tripId: string };
 
-      const record = await riderService.getTripDetail(riderId, tripId);
-      res.status(200).json({ data: record });
-    } catch (err) {
-      next(err);
-    }
-  },
+    const record = await riderService.getTripDetail(riderId, tripId);
+    res.status(200).json({ data: record });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const rateDriver = async (req: Request, res: Response, next: NextFunction) => {
@@ -142,7 +140,15 @@ export const cancelRide = async (req: Request, res: Response, next: NextFunction
 export const requestRide = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const riderId = req.headers['user-id'] as string;
-    const { pickupLat, pickupLng, pickupAddress, dropoffLat, dropoffLng, dropoffAddress, vehicleType } = req.body;
+    const {
+      pickupLat,
+      pickupLng,
+      pickupAddress,
+      dropoffLat,
+      dropoffLng,
+      dropoffAddress,
+      vehicleType,
+    } = req.body;
 
     const result = await riderService.requestRide({
       riderId,
@@ -159,4 +165,3 @@ export const requestRide = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
-
