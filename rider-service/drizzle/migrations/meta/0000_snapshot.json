@@ -59,12 +59,8 @@
           "name": "ratings_rider_id_riders_id_fk",
           "tableFrom": "ratings",
           "tableTo": "riders",
-          "columnsFrom": [
-            "rider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["rider_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -74,9 +70,7 @@
         "ratings_trip_id_unique": {
           "name": "ratings_trip_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "trip_id"
-          ]
+          "columns": ["trip_id"]
         }
       },
       "policies": {},
@@ -181,12 +175,8 @@
           "name": "ride_history_rider_id_riders_id_fk",
           "tableFrom": "ride_history",
           "tableTo": "riders",
-          "columnsFrom": [
-            "rider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["rider_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -196,9 +186,7 @@
         "ride_history_trip_id_unique": {
           "name": "ride_history_trip_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "trip_id"
-          ]
+          "columns": ["trip_id"]
         }
       },
       "policies": {},
@@ -340,12 +328,8 @@
           "name": "saved_places_rider_id_riders_id_fk",
           "tableFrom": "saved_places",
           "tableTo": "riders",
-          "columnsFrom": [
-            "rider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["rider_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -361,29 +345,17 @@
     "public.ride_history_status": {
       "name": "ride_history_status",
       "schema": "public",
-      "values": [
-        "COMPLETED",
-        "CANCELLED"
-      ]
+      "values": ["COMPLETED", "CANCELLED"]
     },
     "public.rider_status": {
       "name": "rider_status",
       "schema": "public",
-      "values": [
-        "PENDING",
-        "APPROVED",
-        "REJECTED",
-        "SUSPENDED"
-      ]
+      "values": ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"]
     },
     "public.saved-places": {
       "name": "saved-places",
       "schema": "public",
-      "values": [
-        "HOME",
-        "WORK",
-        "OTHER"
-      ]
+      "values": ["HOME", "WORK", "OTHER"]
     }
   },
   "schemas": {},

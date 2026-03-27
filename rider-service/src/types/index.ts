@@ -49,18 +49,18 @@ export interface CreateSavedPlaceInput {
 }
 
 export interface RequestRideInput {
-  riderId: string
-  pickupLat: number
-  pickupLng: number
-  pickupAddress: string
-  dropoffLat: number
-  dropoffLng: number
-  dropoffAddress: string
-  vehicleType?: 'ECONOMY' | 'PREMIUM'
+  riderId: string;
+  pickupLat: number;
+  pickupLng: number;
+  pickupAddress: string;
+  dropoffLat: number;
+  dropoffLng: number;
+  dropoffAddress: string;
+  vehicleType?: 'ECONOMY' | 'PREMIUM';
 }
 
 export interface CancelRideInput {
-  riderId: string
-  rideId: string
-  reason?: string
+  riderId: string;
+  rideId: string;
+  reason?: string;
 }
