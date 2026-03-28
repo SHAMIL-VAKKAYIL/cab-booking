@@ -1,4 +1,4 @@
-import { createClient } from 'redis'
+import { createClient,RedisClientType } from 'redis'
 import { logger } from '../config/logger'
 import { config } from '../config'
 
@@ -24,4 +24,4 @@ export const connectRedis = async () => {
     await client.connect()
 }
 
-export const redis = client
+export const redis = client as unknown as RedisClientType
