@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "commonjs",
+        "declaration": true,
+        "rootDir": "src",
+        "outDir": "dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "paths": {
+            "@cab/messaging": ["../packages/messaging"],
+            "@cab/events": ["../packages/events"],
+            "@cab/observability": ["../packages/observability"]
+        }
+    },
+    "include": ["src"]
+}
