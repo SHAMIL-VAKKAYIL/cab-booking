@@ -15,8 +15,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
-    "express": "^5.2.1",
-    "pricing-service": "link:"
+    "@cab/messaging": "workspace:*",
+    "@cab/observability": "workspace:*",
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

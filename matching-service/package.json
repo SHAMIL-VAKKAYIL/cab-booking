@@ -11,6 +11,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
+    "@cab/messaging": "workspace:*",
+    "@cab/observability": "workspace:*",
     "express": "^5.2.1",
     "redis": "^5.11.0"
   },
