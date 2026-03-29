@@ -9,8 +9,10 @@ export const config = {
     rider: process.env.RIDER_SERVICE_URL || 'http://localhost:4003',
     trip: process.env.TRIP_SERVICE_URL || 'http://localhost:4004',
     booking: process.env.BOOKING_SERVICE_URL || 'http://localhost:4005',
-    payment: process.env.PAYMENT_SERVICE_URL || 'http://localhost:4008',
-    pricing: process.env.PRICING_SERVICE_URL || 'http://localhost:4007',
-    notification: process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:4009',
+    pricing: process.env.PRICING_SERVICE_URL || 'http://localhost:4006',
+    payment: process.env.PAYMENT_SERVICE_URL || 'http://localhost:4007',
+    notification: process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:4008',
+    matching: process.env.MATCHING_SERVICE_URL || 'http://localhost:4009',
+
   }
 }

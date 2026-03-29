@@ -50,12 +50,18 @@ router.use(
   requireRole("RIDER", "DRIVER"),
   proxy(config.services.payment),
 );
-router.use(
-  "/api/pricing",
-  authenticate,
-  requireRole("RIDER", "DRIVER"),
-  proxy(config.services.pricing),
-);
+//router.use(
+// "/api/pricing",
+// authenticate,
+// requireRole("RIDER", "DRIVER"),
+// proxy(config.services.pricing),
+//);
+//router.use(
+//"/api/matching",
+//authenticate,
+//requireRole("RIDER", "DRIVER"),
+//proxy(config.services.matching),
+//);
 router.use(
   "/api/notification",
   authenticate,
