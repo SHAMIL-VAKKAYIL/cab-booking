@@ -6,3 +6,4 @@ export * from "./events/trip.events";
 export * from "./events/pricing.events";
 export * from "./events/matching.events";
 export * from "./events/booking.events";
+export * from './events/payment.events'
