@@ -4,7 +4,7 @@ export const Topics = {
   RIDER_PROFILE_CREATE: "rider.profile.create",
   BOOKING_CREATED: "booking.created",
   TRIP_COMPLETED: "trip.completed",
-  TRIP_CREATE_COMMAND: 'trip.create.command',
+  TRIP_CREATE_COMMAND: "trip.create.command",
   TRIP_CANCELLED: "trip.cancelled",
   TRIP_CREATE_REPLY: "trip.create.reply",
   TRIP_STARTED: "trip.started",
@@ -20,4 +20,6 @@ export const Topics = {
   DRIVER_RELEASE_COMMAND: "driver.release.command",
   BOOKING_CONFIRMED: "booking.confirmed",
   BOOKING_FAILED: "booking.failed",
+  PAYMENT_SUCCESS: "payment.success",
+  PAYMENT_FAILED: "payment.failed",
 } as const;
