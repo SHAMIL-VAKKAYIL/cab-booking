@@ -11,4 +11,8 @@ export const config = {
     password: process.env.DB_PASSWORD!,
     port: Number(process.env.DB_PORT),
   },
+  razorpay: {
+    keyId: process.env.RAZORPAY_KEY_ID!,
+    keySecret: process.env.RAZORPAY_KEY_SECRET!,
+  }
 };
