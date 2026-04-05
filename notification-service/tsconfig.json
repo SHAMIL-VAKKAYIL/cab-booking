@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "commonjs",
+        "rootDir": "/",
+        "outDir": "dist",
+        "strict": true,
+        "esModuleInterop": true,
+        "paths": {
+            "@cab/messaging": ["../packages/messaging/src/index.ts"],
+            "@cab/events": ["../packages/events/src/index.ts"],
+            "@cab/observability": ["../packages/observability/src/index.ts"]
+        }
+    }
+}
