@@ -1,36 +1,39 @@
 export interface BookingConfirmedEvent {
-  event: 'BOOKING_CONFIRMED'
+  event: "BOOKING_CONFIRMED";
   data: {
-    rideId:        string
-    riderId:       string
-    driverId:      string
-    tripId:        string
-    estimatedFare: number
-    distanceKm:    number
-    durationMins:  number
-    vehicleType:   string
-    pickupAddress: string
-    dropoffAddress: string
-    occurredAt:    string
-  }
+    rideId: string;
+    riderId: string;
+    riderEmail: string;
+    driverId: string;
+    driverEmail: string;
+    tripId: string;
+    estimatedFare: number;
+    distanceKm: number;
+    durationMins: number;
+    vehicleType: string;
+    pickupAddress: string;
+    dropoffAddress: string;
+    occurredAt: string;
+  };
   metadata: {
-    correlationId: string
-    source:        string
-    version:       number
-  }
+    correlationId: string;
+    source: string;
+    version: number;
+  };
 }
 
 export interface BookingFailedEvent {
-  event: 'BOOKING_FAILED'
+  event: "BOOKING_FAILED";
   data: {
-    rideId:  string
-    riderId: string
-    reason:  string
-    occurredAt: string
-  }
+    rideId: string;
+    riderId: string;
+    riderEmail: string;
+    reason: string;
+    occurredAt: string;
+  };
   metadata: {
-    correlationId: string
-    source:        string
-    version:       number
-  }
+    correlationId: string;
+    source: string;
+    version: number;
+  };
 }

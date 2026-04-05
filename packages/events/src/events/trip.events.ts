@@ -19,6 +19,7 @@ export interface TripStartedEvent {
   data: {
     tripId: string;
     riderId: string;
+    riderEmail: string;
     driverId: string;
     startedAt: string;
     occurredAt: string;
@@ -35,6 +36,7 @@ export interface TripCompletedEvent {
   data: {
     tripId: string;
     riderId: string;
+    riderEmail: string;
     driverId: string;
     fare: number;
     distanceKm: number;
@@ -58,6 +60,7 @@ export interface TripCancelledEvent {
   data: {
     tripId: string;
     riderId: string;
+    riderEmail: string;
     driverId?: string;
     reason: string;
     cancelledBy: string;
