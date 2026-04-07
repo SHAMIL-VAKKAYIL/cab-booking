@@ -28,6 +28,7 @@ export const publishTripCreateReply = async (payload: {
 export const publishTripStarted = async (payload: {
     tripId: string
     riderId: string
+    riderEmail: string
     driverId: string
     startedAt: string
 }) => {
@@ -49,6 +50,7 @@ export const publishTripStarted = async (payload: {
 export const publishTripCompleted = async (payload: {
     tripId: string
     riderId: string
+    riderEmail: string
     driverId: string
     fare: number
     distanceKm: number
@@ -76,6 +78,7 @@ export const publishTripCompleted = async (payload: {
 export const publishTripCancelled = async (payload: {
     tripId: string
     riderId: string
+    riderEmail: string
     driverId?: string
     reason: string
     cancelledBy: string

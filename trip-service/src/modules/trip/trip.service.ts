@@ -16,11 +16,14 @@ import {
 } from "../../events/producer/trip.producer";
 
 const LOCATION_UPDATE_SEC = 30;
+
 export class TripService {
+
   async createTrip(input: CreateTripInput) {
     const {
       correlationId,
       riderId,
+      riderEmail,
       driverId,
       pickupAddress,
       pickupLat,
@@ -56,6 +59,7 @@ export class TripService {
       .insert(trips)
       .values({
         riderId,
+        riderEmail,
         driverId,
         status: "MATCHED",
         pickupAddress,
@@ -114,6 +118,7 @@ export class TripService {
     await publishTripCancelled({
       tripId: updated.id,
       riderId: updated.riderId,
+      riderEmail: updated.riderEmail,
       driverId: updated.driverId ?? undefined,
       reason,
       cancelledBy,
@@ -146,6 +151,7 @@ export class TripService {
     await publishTripStarted({
       tripId: updated.id,
       riderId: updated.riderId,
+      riderEmail: updated.riderEmail,
       driverId: updated.driverId!,
       startedAt: updated.startedAt!.toISOString(),
     });
@@ -187,6 +193,7 @@ export class TripService {
     await publishTripCompleted({
       tripId: updated.id,
       riderId: updated.riderId,
+      riderEmail: updated.riderEmail,
       driverId: updated.driverId!,
       fare: Number(finalFare),
       distanceKm,

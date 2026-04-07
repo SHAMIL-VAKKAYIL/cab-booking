@@ -24,6 +24,7 @@ export const startTripCreateConsumer = async () => {
                 await tripService.createTrip({
                     correlationId,
                     riderId: event.data.riderId,
+                    riderEmail: event.data.riderEmail,
                     driverId: event.data.driverId,
                     pickupAddress: event.data.pickupAddress,
                     pickupLat: event.data.pickupLat,

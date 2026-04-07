@@ -19,6 +19,7 @@ export const vehicleTypeEnum = pgEnum('vehicle_type', [
 export const trips = pgTable('trips', {
   id:             uuid('id').primaryKey().defaultRandom(),
   riderId:        uuid('rider_id').notNull(),
+  riderEmail:     varchar('rider_email', { length: 255 }).notNull(),
   driverId:       uuid('driver_id'),
   status:         tripStatusEnum('status').notNull().default('REQUESTED'),
   pickupAddress:  text('pickup_address').notNull(),

@@ -8,7 +8,7 @@ import {
     getActiveRide,
 } from './trip.controller'
 
-const tripRouter = Router()
+const tripRouter: Router = Router()
 
 tripRouter.get('/v1/trips/:tripId', getTripDetail)
 tripRouter.post('/v1/trips/:tripId/start', startTrip)

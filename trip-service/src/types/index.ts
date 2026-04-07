@@ -1,6 +1,7 @@
 export interface CreateTripInput {
     correlationId: string
     riderId: string
+    riderEmail: string
     driverId: string
     pickupAddress: string
     pickupLat: number
