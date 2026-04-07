@@ -1,3 +1,26 @@
+export interface TripCreateCommandEvent {
+  event: "TRIP_CREATE_COMMAND";
+  data: {
+    correlationId: string;
+    riderId: string;
+    riderEmail: string;
+    driverId: string;
+    pickupAddress: string;
+    pickupLat: number;
+    pickupLng: number;
+    dropoffAddress: string;
+    dropoffLat: number;
+    dropoffLng: number;
+    vehicleType: 'ECONOMY' | 'PREMIUM';
+    estimatedFare: number;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+
 export interface TripCreateReplyEvent {
   event: "TRIP_CREATE_REPLY";
   data: {
