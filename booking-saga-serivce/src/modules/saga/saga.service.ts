@@ -158,6 +158,7 @@ export class SagaService {
       correlationId: rideId,
       rideId,
       riderId: saga.riderId,
+      riderEmail: saga.riderEmail!,
       driverId,
       pickupAddress: saga.pickupAddress,
       pickupLat: Number(saga.pickupLat),
@@ -207,7 +208,9 @@ export class SagaService {
       correlationId: rideId,
       rideId,
       riderId: saga.riderId,
+      riderEmail: saga.riderEmail!,
       driverId: saga.driverId!,
+      driverEmail: saga.driverEmail!,
       tripId,
       estimatedFare: Number(saga.estimatedFare),
       distanceKm: Number(saga.distanceKm),
@@ -265,6 +268,7 @@ export class SagaService {
       correlationId: rideId,
       rideId,
       riderId: saga.riderId,
+      riderEmail: saga.riderEmail!,
       reason,
     });
 
