@@ -7,6 +7,7 @@ export const publishPaymentSuccess = async (payload: {
     paymentId: string
     tripId: string
     riderId: string
+    riderEmail: string
     driverId: string
     amount: number
     currency: string
@@ -31,6 +32,7 @@ export const publishPaymentFailed = async (payload: {
     paymentId: string
     tripId: string
     riderId: string
+    riderEmail: string
     reason: string
 }) => {
     const event: PaymentFailedEvent = {

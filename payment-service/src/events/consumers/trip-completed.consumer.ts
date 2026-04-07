@@ -18,15 +18,16 @@ export const startTripCompletedConsumer = async () => {
             logger.info({ key, value }, "Received TRIP_COMPLETED event");
             if (!value) return;
             const { data } = value
-            const { tripId, driverId, riderId, amount } = data
+            const { tripId, driverId, riderId, amount, riderEmail } = data
             if (!tripId || !riderId || !driverId || !amount) {
                 logger.error({ data }, 'trip.completed missing required fields, skipping')
                 return
             }
 
-            await paymentService.proccessPayment({
+            await paymentService.processPayment({
                 tripId,
                 riderId,
+                riderEmail,
                 driverId,
                 amount: Number(amount),
             })
