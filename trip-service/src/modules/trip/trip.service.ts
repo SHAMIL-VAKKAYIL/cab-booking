@@ -14,6 +14,7 @@ import {
   publishTripCompleted,
   publishTripCancelled,
 } from "../../events/producer/trip.producer";
+import { io } from "../../server";
 
 const LOCATION_UPDATE_SEC = 30;
 
@@ -221,6 +222,13 @@ export class TripService {
       LOCATION_UPDATE_SEC,
       JSON.stringify({ lat, lng, updatedAt: new Date().toISOString() }),
     );
+
+    io.to(tripId).emit("location_updated", {
+      tripId,
+      lat,
+      lng,
+      updatedAt: new Date().toISOString(),
+    });
   }
 
   async getLocation(tripId: string) {
