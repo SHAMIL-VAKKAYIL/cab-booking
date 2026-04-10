@@ -9,6 +9,7 @@ const proxy = (target: string) =>
   createProxyMiddleware({
     target,
     changeOrigin: true,
+    ws: true,
     on: {
       error: (err, req, res: any) => {
         res.status(502).json({ message: "service unavailable" });
