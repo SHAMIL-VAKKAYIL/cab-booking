@@ -13,12 +13,12 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
-    "kafkajs": "^2.2.4",
-    "@cab/observability": "workspace:*"
-
+    "@cab/observability": "workspace:*",
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
     "dotenv": "^17.3.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

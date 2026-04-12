@@ -1,5 +1,8 @@
 {
   "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev"
+  },
   "workspaces": [
     "auth-service",
     "driver-service",

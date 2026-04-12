@@ -47,6 +47,26 @@ export const createConsumer = async (
   config: ConsumerConfig,
   dlqProducer?: Producer,
 ) => {
+  const admin = kafka.admin();
+  await admin.connect();
+  const topicsToCreate = [config.topic];
+  if (config.dlqTopic) topicsToCreate.push(config.dlqTopic);
+  
+  try {
+    const existingTopics = await admin.listTopics();
+    const missingTopics = topicsToCreate.filter(t => !existingTopics.includes(t));
+    if (missingTopics.length > 0) {
+      await admin.createTopics({
+        topics: missingTopics.map(t => ({ topic: t, numPartitions: 1 }))
+      });
+      logger.info({ topics: missingTopics }, "Created missing Kafka topics");
+    }
+  } catch (error) {
+    logger.error({ error }, "Failed to create topics via admin");
+  } finally {
+    await admin.disconnect();
+  }
+
   const consumer = kafka.consumer({ groupId: config.groupId });
   await consumer.connect();
 
