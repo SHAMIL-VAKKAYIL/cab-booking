@@ -2,6 +2,7 @@ import { app } from './app';
 import { config } from './config';
 import { logger } from './config/logger';
 import { pool } from './db/pool';
+import {connectProducer} from '@cab/messaging'
 import { startTripCompletedConsumer } from './events/consumers/trip-completed.consumer';
 import { startUserCreatedConsumer } from './events/consumers/user-created.consumer';
 
@@ -10,6 +11,8 @@ const start = async () => {
   try {
     await startUserCreatedConsumer();
     await startTripCompletedConsumer();
+
+    await connectProducer();
 
     await pool.connect();
     logger.info({}, 'database connected');

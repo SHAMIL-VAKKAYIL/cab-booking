@@ -362,7 +362,7 @@ export class RiderService {
       logger.info({ rideId }, 'ride requested successfully');
       return { rideId, status: 'Requested' };
     } catch (error) {
-      logger.error({ error }, 'Failed to request ride');
+      logger.error({ err:error }, 'Failed to request ride');
       throw error;
     }
   }
