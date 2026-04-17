@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 export const publishRideRequested = async (payload: {
   rideId: string;
   riderId: string;
+  riderEmail: string;
   pickupLat: number;
   pickupLng: number;
   pickupAddress: string;

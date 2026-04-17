@@ -350,6 +350,7 @@ export class RiderService {
       await publishRideRequested({
         rideId,
         riderId,
+        riderEmail: existingRider[0].email,
         pickupLat,
         pickupLng,
         pickupAddress,
