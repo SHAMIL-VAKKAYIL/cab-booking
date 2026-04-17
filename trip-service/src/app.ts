@@ -12,6 +12,9 @@ app.use((req, _, next) => {
   logger.info(`${req.method} ${req.path}`);
   next();
 });
+app.use('/health', (req, res) => {
+  res.send('OK');
+})
 app.use('/api/trip', tripRouter)
 
 app.use(errorHandler);

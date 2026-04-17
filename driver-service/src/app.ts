@@ -4,6 +4,9 @@ import { driverRouter } from './modules/driver/driver.routes'
 const app:express.Application = express()
 
 app.use(express.json())
+app.use('/health', (req, res) => {
+  res.send('OK');
+})
 app.use('/', driverRouter)
 
 app.use((err:any, req:any, res:any, next:any) => {
