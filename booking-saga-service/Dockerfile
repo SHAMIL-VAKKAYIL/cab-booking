@@ -50,4 +50,4 @@ WORKDIR /app/booking-saga-service
 
 EXPOSE 4005
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/src/server.js"]
