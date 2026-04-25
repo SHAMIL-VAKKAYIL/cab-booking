@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "commonjs",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "paths": {
       "@cab/messaging": ["../packages/messaging"],
       "@cab/events": ["../packages/events"],
