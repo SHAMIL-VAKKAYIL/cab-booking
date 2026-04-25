@@ -1,15 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "rootDir": "/",
+        "target": "es2022",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "declaration": true,
+        "rootDir": "src",
         "outDir": "dist",
         "strict": true,
         "esModuleInterop": true,
+        "skipLibCheck": true,
         "paths": {
-            "@cab/messaging": ["../packages/messaging/src/index.ts"],
-            "@cab/events": ["../packages/events/src/index.ts"],
-            "@cab/observability": ["../packages/observability/src/index.ts"]
+            "@cab/messaging": ["../packages/messaging"],
+            "@cab/events": ["../packages/events"],
+            "@cab/observability": ["../packages/observability"]
         }
-    }
+    },
+    "include": ["src"]
 }

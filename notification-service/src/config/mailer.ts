@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import { logger } from "./logger";
 import { config } from ".";
-dotenv.config();
+// dotenv.config();
 
 if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
   throw new Error("GMAIL_USER and GMAIL_APP_PASSWORD must be set");
