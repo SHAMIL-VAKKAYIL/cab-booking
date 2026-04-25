@@ -13,9 +13,8 @@ export const startUserCreatedConsumer = async () => {
     retries: 3,
     retryDelayMs: 1000,
     dlqTopic: 'user.created.dlq',
-    eachMessage: async ({ value }: consumerMessage) => {
+    eachMessage: async ({ value }) => {
       const event = value as UserCreatedEvent;
-      console.log(event);
       if (event.data.role !== 'rider') {
         return;
       }
