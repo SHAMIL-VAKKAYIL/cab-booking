@@ -1,0 +1,115 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    image: gateway:latest
+    container_name: gateway
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./gateway/.env
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    image: auth-service:latest
+    container_name: authentication
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./auth-service/.env
+
+  driver-service:
+    build:
+      context: .
+      dockerfile: driver-service/Dockerfile
+    image: driver-service:latest
+    container_name: driver-service
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./driver-service/.env
+
+  rider-service:
+    build:
+      context: .
+      dockerfile: rider-service/Dockerfile
+    image: rider-service:latest
+    container_name: rider-service
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./rider-service/.env
+
+  trip-service:
+    build:
+      context: .
+      dockerfile: trip-service/Dockerfile
+    image: trip-service:latest
+    container_name: trip-service
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./trip-service/.env
+
+  booking-saga-service:
+    build:
+      context: .
+      dockerfile: booking-saga-service/Dockerfile
+    image: booking-saga:latest
+    container_name: booking-saga
+    ports:
+      - "4005:4005"
+    env_file:
+      - ./booking-saga-service/.env
+
+  pricing-service:
+    build:
+      context: .
+      dockerfile: pricing-service/Dockerfile
+    image: pricing-service:latest
+    container_name: pricing-service
+    ports:
+      - "4006:4006"
+    env_file:
+      - ./pricing-service/.env
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    image: payment-service:latest
+    container_name: payment-service
+    ports:
+      - "4007:4007"
+    env_file:
+      - ./payment-service/.env
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    image: notification-service:latest
+    container_name: notification-service
+    ports:
+      - "4008:4008"
+    env_file:
+      - ./notification-service/.env
+
+  matching-service:
+    build:
+      context: .
+      dockerfile: matching-service/Dockerfile
+    image: matching-service:latest
+    container_name: matching-service
+    ports:
+      - "4009:4009"
+    env_file:
+      - ./matching-service/.env
+
+networks:
+  default:
+    name: cab_network
+    external: true

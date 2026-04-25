@@ -9,6 +9,7 @@
     "gateway",
     "matching-service",
     "notification-service",
+    "booking-saga-service",
     "payment-service",
     "pricing-service",
     "rider-service",

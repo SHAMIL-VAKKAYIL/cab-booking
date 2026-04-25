@@ -1,0 +1,6 @@
+CREATE DATABASE cab_auth;
+CREATE DATABASE cab_rider;
+CREATE DATABASE cab_trip;
+CREATE DATABASE cab_driver;
+CREATE DATABASE cab_booking;
+CREATE DATABASE cab_payment;

@@ -8,4 +8,5 @@ packages:
   - "pricing-service"
   - "rider-service"
   - "trip-service"
+  - "booking-saga-service"
   - "packages/*"

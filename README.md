@@ -45,18 +45,18 @@ The system uses a hybrid communication model: HTTP for synchronous reads and gat
 
 ## Services
 
-| Service | Responsibility | Status |
-|---|---|---|
-| `auth-service` | Registration, login, JWT issuing, refresh/access token lifecycle, account status | ✅ Complete |
-| `gateway` | JWT verification, role-based routing, header forwarding (`user-id`, `user-role`) | ✅ Complete |
-| `rider-service` | Rider profile, ride history (CQRS), saved places, ratings, ride request/cancel | ✅ Complete |
-| `driver-service` | Driver profile, vehicle management, availability toggle, Redis geospatial indexing, rating updates | ✅ Complete |
-| `trip-service` | Full trip state machine, Redis live location tracking, Kafka consumers | ✅ Complete |
-| `matching-service` | Redis GeoSet driver proximity search, 5 Kafka consumers, 3 Redis data structures | ✅ Complete |
-| `pricing-service` | Haversine distance calculation, fare computation, pure Kafka (no HTTP, no DB) | ✅ Complete |
-| `booking-saga-service` | Saga orchestrator for the booking flow, step-by-step coordination with compensation | 🔄 In Progress |
-| `payment-service` | Payment processing, Kafka integration | 🔄 In Progress |
-| `notification-service` | Event-driven notifications via Kafka | 🔄 In Progress |
+| Service                | Responsibility                                                                                     | Status         |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | -------------- |
+| `auth-service`         | Registration, login, JWT issuing, refresh/access token lifecycle, account status                   | ✅ Complete    |
+| `gateway`              | JWT verification, role-based routing, header forwarding (`user-id`, `user-role`)                   | ✅ Complete    |
+| `rider-service`        | Rider profile, ride history (CQRS), saved places, ratings, ride request/cancel                     | ✅ Complete    |
+| `driver-service`       | Driver profile, vehicle management, availability toggle, Redis geospatial indexing, rating updates | ✅ Complete    |
+| `trip-service`         | Full trip state machine, Redis live location tracking, Kafka consumers                             | ✅ Complete    |
+| `matching-service`     | Redis GeoSet driver proximity search, 5 Kafka consumers, 3 Redis data structures                   | ✅ Complete    |
+| `pricing-service`      | Haversine distance calculation, fare computation, pure Kafka (no HTTP, no DB)                      | ✅ Complete    |
+| `booking-saga-service` | Saga orchestrator for the booking flow, step-by-step coordination with compensation                | 🔄 In Progress |
+| `payment-service`      | Payment processing, Kafka integration                                                              | 🔄 In Progress |
+| `notification-service` | Event-driven notifications via Kafka                                                               | 🔄 In Progress |
 
 ---
 
@@ -94,28 +94,28 @@ Kafka producers live in `src/events/producers/` rather than being called inline 
 
 ## Kafka Topic Map
 
-| Topic | Publisher | Consumers |
-|---|---|---|
-| `user.created` | auth-service | rider-service, driver-service |
-| `ride.requested` | rider-service | booking-saga-service |
-| `ride.cancelled` | rider-service | booking-saga-service, trip-service |
-| `fare.calculate.command` | booking-saga-service | pricing-service |
-| `fare.calculate.reply` | pricing-service | booking-saga-service |
-| `driver.find.command` | booking-saga-service | matching-service |
-| `driver.find.reply` | matching-service | booking-saga-service |
-| `trip.create.command` | booking-saga-service | trip-service |
-| `trip.create.reply` | trip-service | booking-saga-service |
-| `booking.confirmed` | booking-saga-service | notification-service |
-| `booking.failed` | booking-saga-service | notification-service |
-| `driver.online` | driver-service | matching-service |
-| `driver.offline` | driver-service | matching-service |
-| `driver.release.command` | booking-saga-service | matching-service |
-| `trip.started` | trip-service | notification-service |
-| `trip.completed` | trip-service | payment-service, rider-service, notification-service |
-| `trip.cancelled` | trip-service | payment-service, matching-service, notification-service |
-| `payment.success` | payment-service | notification-service |
-| `payment.failed` | payment-service | notification-service |
-| `driver.rated` | rider-service | driver-service |
+| Topic                    | Publisher            | Consumers                                               |
+| ------------------------ | -------------------- | ------------------------------------------------------- |
+| `user.created`           | auth-service         | rider-service, driver-service                           |
+| `ride.requested`         | rider-service        | booking-saga-service                                    |
+| `ride.cancelled`         | rider-service        | booking-saga-service, trip-service                      |
+| `fare.calculate.command` | booking-saga-service | pricing-service                                         |
+| `fare.calculate.reply`   | pricing-service      | booking-saga-service                                    |
+| `driver.find.command`    | booking-saga-service | matching-service                                        |
+| `driver.find.reply`      | matching-service     | booking-saga-service                                    |
+| `trip.create.command`    | booking-saga-service | trip-service                                            |
+| `trip.create.reply`      | trip-service         | booking-saga-service                                    |
+| `booking.confirmed`      | booking-saga-service | notification-service                                    |
+| `booking.failed`         | booking-saga-service | notification-service                                    |
+| `driver.online`          | driver-service       | matching-service                                        |
+| `driver.offline`         | driver-service       | matching-service                                        |
+| `driver.release.command` | booking-saga-service | matching-service                                        |
+| `trip.started`           | trip-service         | notification-service                                    |
+| `trip.completed`         | trip-service         | payment-service, rider-service, notification-service    |
+| `trip.cancelled`         | trip-service         | payment-service, matching-service, notification-service |
+| `payment.success`        | payment-service      | notification-service                                    |
+| `payment.failed`         | payment-service      | notification-service                                    |
+| `driver.rated`           | rider-service        | driver-service                                          |
 
 ---
 
@@ -146,15 +146,15 @@ cab-booking/
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js 20+, TypeScript |
-| Framework | Express |
-| Database | PostgreSQL via Drizzle ORM |
-| Messaging | Apache Kafka |
-| Cache / Geo | Redis (`node-redis`) |
-| Logging | Pino |
-| Package Manager | pnpm (workspaces) |
+| Layer           | Technology                 |
+| --------------- | -------------------------- |
+| Runtime         | Node.js 20+, TypeScript    |
+| Framework       | Express                    |
+| Database        | PostgreSQL via Drizzle ORM |
+| Messaging       | Apache Kafka               |
+| Cache / Geo     | Redis (`node-redis`)       |
+| Logging         | Pino                       |
+| Package Manager | pnpm (workspaces)          |
 
 ---
 
@@ -163,6 +163,7 @@ cab-booking/
 ### `@cab/messaging`
 
 Kafka consumer and producer abstractions with:
+
 - Retry logic with jitter-based exponential backoff
 - Dead letter queue (DLQ) routing on repeated failure
 - JSON parsing inside try/catch to avoid crashing consumers on malformed messages
@@ -218,7 +219,7 @@ Each service requires a `.env` file. Common variables across services:
 PORT=3001
 DATABASE_URL=postgresql://user:password@localhost:5432/db_name
 KAFKA_BROKERS=localhost:9092
-REDIS_URL=redis://localhost:6379
+REDIS_URL=redis://redis:6379
 NODE_ENV=development
 ```
 
