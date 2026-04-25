@@ -1,7 +1,7 @@
-import { app } from "./app";
-import { config } from "./config";
-import { logger } from "./config/logger";
-import { pool } from "./db/pool";
+import { app } from "./app.js";
+import { config } from "./config/index.js";
+import { logger } from "./config/logger.js";
+import { pool } from "./db/pool.js";
 import { connectProducer } from "@cab/messaging";
 
 const PORT = config.port;

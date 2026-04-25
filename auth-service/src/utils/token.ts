@@ -1,7 +1,7 @@
 import jwt, { SignOptions, Secret } from 'jsonwebtoken'
 
-import { logger } from '../config/logger'
-import { config } from '../config'
+import { logger } from '../config/logger.js'
+import { config } from '../config/index.js'
 
 export interface TokenPayload {
     userId: string

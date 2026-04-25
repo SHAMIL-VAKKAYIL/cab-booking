@@ -1,9 +1,9 @@
 import { eq } from 'drizzle-orm'
 import bycrypt from 'bcrypt'
-import { db } from '../../db'
-import { users } from '../../../drizzle/schema'
-import { logger } from '../../config/logger'
-import { RegisterRequest } from '../../types/authType'
+import { db } from '../../db/index.js'
+import { users } from '../../db/schema.js'
+import { logger } from '../../config/logger.js'
+    import { RegisterRequest } from '../../types/authType.js'
 
 
 export class AuthService {

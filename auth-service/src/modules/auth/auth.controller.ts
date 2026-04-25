@@ -1,15 +1,15 @@
 import express from "express";
 // import {} from '@cab/messaging'
-import { logger } from "../../config/logger";
-import { LoginRequest, RegisterRequest } from "../../types/authType";
-import { AuthService } from "./auth.service";
+import { logger } from "../../config/logger.js";
+import { LoginRequest, RegisterRequest } from "../../types/authType.js";
+import { AuthService } from "./auth.service.js";
 import {
   createAccessToken,
   createRefreshToken,
   verifyRefreshToken,
-} from "../../utils/token";
-import { config } from "../../config";
-import { publishUserCreated } from "../../events/publishers/user-created";
+} from "../../utils/token.js";
+import { config } from "../../config/index.js";
+import { publishUserCreated } from "../../events/publishers/user-created.js";
 
 const authService = new AuthService();
 

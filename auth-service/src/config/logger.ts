@@ -1,3 +1,3 @@
 import { createLogger } from '@cab/observability'
 
-export const logger = createLogger('auth-service')
+export const logger:any = createLogger('auth-service')
