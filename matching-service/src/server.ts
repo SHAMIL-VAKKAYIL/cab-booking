@@ -1,4 +1,4 @@
-import 'dotenv/config'
+// import 'dotenv/config'
 import { app } from './app'
 import { config } from './config'
 import { logger } from './config/logger'
@@ -9,6 +9,7 @@ import { startDriverOnlineConsumer }  from './events/consumers/driver-online.con
 import { startDriverOfflineConsumer } from './events/consumers/driver-offline.consumer'
 import { startDriverReleaseConsumer } from './events/consumers/driver-release.consumer'
 import { startTripCancelledConsumer } from './events/consumers/trip-cancelled.consumer'
+import { startTripCompletedConsumer } from './events/consumers/trip-completed.consumer'
 
 const start = async () => {
   try {
@@ -23,6 +24,7 @@ const start = async () => {
     await startDriverOfflineConsumer()
     await startDriverReleaseConsumer()
     await startTripCancelledConsumer()
+    await startTripCompletedConsumer()
     logger.info('All Kafka consumers started')
 
     app.listen(config.port, () => {
