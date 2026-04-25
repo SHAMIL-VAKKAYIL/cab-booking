@@ -1,8 +1,7 @@
 import pino from 'pino';
 
-import dotenv from 'dotenv';
-
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 
 export const createLogger = (serviceName: string) => {
