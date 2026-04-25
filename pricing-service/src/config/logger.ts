@@ -1,3 +1,3 @@
 import { createLogger } from '@cab/observability';
 
-export const logger = createLogger('rider-service');
+export const logger:any = createLogger('pricing-service');
