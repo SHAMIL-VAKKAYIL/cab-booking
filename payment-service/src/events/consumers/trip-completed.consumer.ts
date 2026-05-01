@@ -18,20 +18,50 @@ export const startTripCompletedConsumer = async () => {
             logger.info({ key, value }, "Received TRIP_COMPLETED event");
             if (!value) return;
             const { data } = value
-            const { tripId, driverId, riderId, amount, riderEmail } = data
-            if (!tripId || !riderId || !driverId || !amount) {
-                logger.error({ data }, 'trip.completed missing required fields, skipping')
+            const { tripId, driverId, riderId, fare, riderEmail } = data
+            
+            // Validate all required fields
+            if (!tripId) {
+                logger.error({ data }, 'trip.completed missing tripId, skipping')
+                return
+            }
+            if (!riderId) {
+                logger.error({ tripId, data }, 'trip.completed missing riderId, skipping')
+                return
+            }
+            if (!driverId) {
+                logger.error({ tripId, data }, 'trip.completed missing driverId, skipping')
+                return
+            }
+            if (fare === undefined || fare === null) {
+                logger.error({ tripId, data }, 'trip.completed missing fare, skipping')
                 return
             }
 
-            await paymentService.processPayment({
-                tripId,
-                riderId,
-                riderEmail,
-                driverId,
-                amount: Number(amount),
-            })
-            logger.info({ tripId }, 'Payment processed from trip.completed')
+            const amount = Number(fare)
+            if (isNaN(amount) || amount <= 0) {
+                logger.error({ tripId, fare, amount }, 'trip.completed has invalid fare amount, skipping')
+                return
+            }
+
+            try {
+                const payment = await paymentService.processPayment({
+                    tripId,
+                    riderId,
+                    riderEmail,
+                    driverId,
+                    amount,
+                })
+
+                if (payment.status !== "SUCCESS") {
+                    logger.error({ tripId, paymentId: payment.id, status: payment.status }, 'Payment service returned failed status')
+                    return
+                }
+
+                logger.info({ tripId, amount, paymentId: payment.id }, 'Payment processed successfully from trip.completed')
+            } catch (error) {
+                logger.error({ tripId, error: (error as Error).message }, 'Failed to process payment from trip.completed')
+            }
         }
 
     })

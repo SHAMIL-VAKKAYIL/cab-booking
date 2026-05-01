@@ -20,6 +20,12 @@ export class PaymentService {
       riderEmail,
     } = input;
 
+    // Validate amount is a valid positive number
+    if (!amount || amount <= 0 || isNaN(amount)) {
+      logger.error({ tripId, amount }, "Invalid payment amount");
+      throw new Error(`Invalid payment amount: ${amount}`);
+    }
+
     const existing = await db
       .select()
       .from(payments)
@@ -44,10 +50,12 @@ export class PaymentService {
       .returning();
 
     try {
+      logger.info({ tripId, amount, amountInPaise: amount * 100, currency }, "Creating Razorpay order");
+
       const order = await razorpay.orders.create({
         amount: amount * 100,
         currency,
-        receipt: `receipt_${tripId}`,
+        receipt: `rcpt_${tripId.slice(-8)}`, // Max 40 chars: rcpt_ + 8 chars = 13
         notes: {
           paymentId: payment.id,
           tripId,
@@ -56,13 +64,19 @@ export class PaymentService {
         },
       });
 
-      logger.info({ tripId, orderId: order.id }, "Razorpay order created");
+      if (!order || !order.id) {
+        throw new Error(`Invalid Razorpay order response: ${JSON.stringify(order)}`);
+      }
+
+      const orderId = order.id;
+      const orderStatus = (order as any).status ?? "UNKNOWN";
+      logger.info({ tripId, orderId, orderStatus }, "Razorpay order created successfully");
 
       const [updated] = await db
         .update(payments)
         .set({
           status: "SUCCESS",
-          transactionId: order.id,
+          transactionId: orderId,
           processedAt: new Date(),
           updatedAt: new Date(),
         })
@@ -88,12 +102,22 @@ export class PaymentService {
       return updated;
       // return payment;
     } catch (error) {
-      logger.info({ tripId, paymentId: payment.id }, "Payment failed");
+      const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+      logger.error(
+        {
+          tripId,
+          paymentId: payment.id,
+          error: errorMessage,
+          rawError: error,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        "Payment failed - Razorpay order creation error"
+      );
       const [updated] = await db
         .update(payments)
         .set({
           status: "FAILED",
-          failureReason: (error as Error).message,
+          failureReason: errorMessage,
           updatedAt: new Date(),
         })
         .where(eq(payments.id, payment.id))
@@ -105,7 +129,7 @@ export class PaymentService {
         tripId,
         riderId,
         riderEmail,
-        reason: (error as Error).message,
+        reason: errorMessage,
       });
 
       return updated;

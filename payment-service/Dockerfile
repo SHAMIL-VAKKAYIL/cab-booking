@@ -32,7 +32,7 @@ COPY pnpm-lock.yaml ./
 COPY packages/ ./packages
 COPY payment-service/ ./payment-service
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/payment-service/dist ./payment-service/dist
 COPY --from=builder /app/packages/events/dist ./packages/events/dist
