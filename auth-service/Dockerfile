@@ -44,7 +44,7 @@ COPY packages/ ./packages/
 COPY auth-service/ ./auth-service/
 
 # install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 
 # Copy compiled package output from builder ─────────────────────────────

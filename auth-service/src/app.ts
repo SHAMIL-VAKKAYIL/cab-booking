@@ -13,7 +13,7 @@ app.use((req:any, _, next:any) => {
   next();
 });
 app.use('/health', (req, res) => {
-  res.send('OK');
+  res.send('OK AUTH');
 })
 app.use("/", authRouter);
 
