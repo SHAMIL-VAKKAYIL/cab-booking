@@ -44,8 +44,8 @@ export class SagaService {
       logger.warn({ rideId }, "Saga already exists, skipping");
       return existing[0];
     }
-    
-    logger.info(input)
+
+    logger.info(input);
 
     const [saga] = await db
       .insert(bookingSagas)
@@ -180,13 +180,16 @@ export class SagaService {
   //! trip create reply consume
   async handleTripCreated(input: UpdateSagaTripInput) {
     const { rideId, tripId } = input;
-logger.info({rideId, tripId},'trip created')
+    console.log(rideId,tripId);
+    
+    logger.info({ rideId, tripId }, "trip created");
     const saga = await this.findByRideId(rideId);
+logger.info({saga},'saga 2')
     if (!saga) {
       logger.warn({ rideId }, "Saga not found for trip reply, skipping");
       return;
     }
-logger.info({rideId, tripId},'trip created')
+    logger.info({ rideId, tripId }, "trip created");
 
     if (saga.status !== "DRIVER_FOUND") {
       logger.warn(
@@ -301,10 +304,13 @@ logger.info({rideId, tripId},'trip created')
   }
 
   async findByRideId(rideId: string) {
+  logger.info({rideId},'check rider id')
+  
     const [saga] = await db
       .select()
       .from(bookingSagas)
       .where(eq(bookingSagas.rideId, rideId));
+      logger.info({saga},'check saga')
     return saga ?? null;
   }
 }

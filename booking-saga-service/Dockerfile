@@ -38,7 +38,7 @@ COPY packages/ ./packages/
 COPY booking-saga-service/ ./booking-saga-service/
 
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/booking-saga-service/dist ./booking-saga-service/dist
 COPY --from=builder /app/packages/events/dist ./packages/events/dist
