@@ -32,7 +32,7 @@ COPY pnpm-lock.yaml ./
 COPY packages/ ./packages
 COPY notification-service/ ./notification-service
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/notification-service/dist ./notification-service/dist
 COPY --from=builder /app/packages/events/dist ./packages/events/dist
