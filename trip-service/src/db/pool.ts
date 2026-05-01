@@ -1,4 +1,6 @@
-import { Pool } from 'pg';
-import { config } from '../config';
+import { Pool } from "pg";
 
-export const pool = new Pool(config.db);
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});

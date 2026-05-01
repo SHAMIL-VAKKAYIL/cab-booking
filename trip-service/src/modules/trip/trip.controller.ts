@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { TripService } from './trip.service'
+import { logger } from '../../config/logger'
 
 const tripService = new TripService()
 
@@ -7,7 +8,7 @@ export const startTrip = async (req: Request, res: Response, next: NextFunction)
     try {
         const driverId = req.headers['user-id'] as string
         const { tripId } = req.params as { tripId: string }
-
+        logger.info({driverId,tripId},'sdfsfs')
         const trip = await tripService.startTrip(tripId, driverId)
         res.status(200).json({ data: trip })
     } catch (err) {

@@ -15,6 +15,6 @@ app.use((req, _, next) => {
 app.use('/health', (req, res) => {
   res.send('OK');
 })
-app.use('/api/trip', tripRouter)
+app.use('/', tripRouter)
 
 app.use(errorHandler);

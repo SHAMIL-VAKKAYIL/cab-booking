@@ -19,11 +19,11 @@ import { io } from "../../server";
 const LOCATION_UPDATE_SEC = 30;
 
 export class TripService {
-
   async createTrip(input: CreateTripInput) {
     const {
       correlationId,
       riderId,
+      rideId,
       riderEmail,
       driverId,
       pickupAddress,
@@ -51,6 +51,7 @@ export class TripService {
       await publishTripCreateReply({
         correlationId,
         tripId: activeTrip.id,
+        rideId: rideId,
         success: true,
       });
       return activeTrip;
@@ -78,6 +79,7 @@ export class TripService {
     await publishTripCreateReply({
       correlationId,
       tripId: trip.id,
+      rideId: rideId,
       success: true,
     });
 
@@ -132,7 +134,7 @@ export class TripService {
 
   async startTrip(tripId: string, driverId: string) {
     const trip = await this.findById(tripId);
-
+    logger.info({ trip },'sdsdsds');
     if (!trip) throw new Error("Trip not found");
     if (trip.driverId !== driverId) throw new Error("Forbidden");
     if (trip.status !== "MATCHED") {
@@ -174,6 +176,11 @@ export class TripService {
     //! use estimated fare as final fare for now
     //! pricing-service will refine this later
     const finalFare = trip.estimatedFare;
+    const fareAmount = Number(finalFare);
+    
+    if (!finalFare || isNaN(fareAmount) || fareAmount <= 0) {
+      throw new Error(`Trip has invalid fare: ${finalFare}`);
+    }
 
     const [updated] = await db
       .update(trips)
@@ -196,7 +203,7 @@ export class TripService {
       riderId: updated.riderId,
       riderEmail: updated.riderEmail,
       driverId: updated.driverId!,
-      fare: Number(finalFare),
+      fare: fareAmount,
       distanceKm,
       durationMins,
       pickupAddress: updated.pickupAddress,

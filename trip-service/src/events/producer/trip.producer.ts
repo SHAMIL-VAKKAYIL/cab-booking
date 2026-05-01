@@ -7,6 +7,7 @@ import { randomUUID } from 'crypto'
 export const publishTripCreateReply = async (payload: {
     correlationId: string
     tripId: string
+    rideId:string
     success: boolean
     reason?: string
 }) => {

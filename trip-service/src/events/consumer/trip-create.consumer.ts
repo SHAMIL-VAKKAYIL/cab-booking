@@ -24,6 +24,7 @@ export const startTripCreateConsumer = async () => {
                 await tripService.createTrip({
                     correlationId,
                     riderId: event.data.riderId,
+                    rideId:event.data.rideId,
                     riderEmail: event.data.riderEmail,
                     driverId: event.data.driverId,
                     pickupAddress: event.data.pickupAddress,
@@ -42,6 +43,7 @@ export const startTripCreateConsumer = async () => {
                 await publishTripCreateReply({
                     correlationId,
                     tripId: '',
+                    rideId: event.data.rideId,
                     success: false,
                     reason: (error as Error).message,
                 })

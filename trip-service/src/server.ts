@@ -8,6 +8,9 @@ import { connectProducer } from "@cab/messaging";
 import { startRideCancelledConsumer } from "./events/consumer/trip-cancelled.consumer";
 import { startTripCreateConsumer } from "./events/consumer/trip-create.consumer";
 import { connectRedis } from "./lib/redis";
+import { TripService } from "./modules/trip/trip.service";
+
+const tripService = new TripService();
 
 const PORT = config.port;
 
@@ -32,11 +35,20 @@ io.on("connection", (socket) => {
     logger.info({ tripId, socketId: socket.id }, "user left trip");
   });
 
+  socket.on("update_location", async ({ tripId, driverId, lat, lng }: { tripId: string, driverId: string, lat: number, lng: number }) => {
+    try {
+      await tripService.updateLocation(tripId, lat, lng);
+      logger.info({ tripId, driverId, socketId: socket.id }, "location updated via socket");
+    } catch (error) {
+      logger.error({ error, tripId, driverId, socketId: socket.id }, "failed to update location via socket");
+      socket.emit("location_update_error", { tripId, error: (error as Error).message });
+    }
+  });
+
   socket.on("disconnect", () => {
-  logger.info({ socketId: socket.id }, "user disconnected");
+    logger.info({ socketId: socket.id }, "user disconnected");
   });
 });
-
 
 const start = async () => {
   try {
@@ -53,9 +65,9 @@ const start = async () => {
     await startRideCancelledConsumer();
     logger.info({}, "Kafka consumers started");
 
-   httpServer.listen(PORT,()=>{
-    logger.info({},`Server is running on port ${PORT}`)
-   })
+    httpServer.listen(PORT, () => {
+      logger.info({}, `Server is running on port ${PORT}`);
+    });
   } catch (error) {
     logger.error({ error }, "Failed to start server");
     process.exit(1);
