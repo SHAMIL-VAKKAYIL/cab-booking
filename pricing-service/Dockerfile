@@ -32,7 +32,7 @@ COPY pnpm-lock.yaml ./
 COPY packages/ ./packages
 COPY pricing-service/ ./pricing-service
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/pricing-service/dist ./pricing-service/dist
 COPY --from=builder /app/packages/events/dist ./packages/events/dist
