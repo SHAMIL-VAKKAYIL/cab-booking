@@ -2,6 +2,7 @@ export interface TripCreateCommandEvent {
   event: "TRIP_CREATE_COMMAND";
   data: {
     correlationId: string;
+    rideId: string;
     riderId: string;
     riderEmail: string;
     driverId: string;
@@ -25,6 +26,7 @@ export interface TripCreateReplyEvent {
   event: "TRIP_CREATE_REPLY";
   data: {
     correlationId: string;
+    rideId: string;
     tripId: string;
     success: boolean;
     reason?: string;

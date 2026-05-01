@@ -219,7 +219,7 @@ Each service requires a `.env` file. Common variables across services:
 PORT=3001
 DATABASE_URL=postgresql://user:password@localhost:5432/db_name
 KAFKA_BROKERS=localhost:9092
-REDIS_URL=redis://redis:6379
+REDIS_URL=redis://localhost:6379
 NODE_ENV=development
 ```
 

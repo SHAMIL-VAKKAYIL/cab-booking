@@ -10,5 +10,3 @@ pnpm-lock.yaml
 #Builds
 dist/
 
-KAFKA_BROKERS=kafka:9092
-REDIS_URL=redis://redis:6379

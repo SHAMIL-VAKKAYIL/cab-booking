@@ -6,5 +6,5 @@ import {Kafka} from 'kafkajs'
 
 export const kafka =new Kafka({
     clientId:'cab_booking',
-    brokers:[process.env.KAFKA_BROKER||'kafka:9092']
+    brokers:[process.env.KAFKA_BROKER||'localhost:9092']
 })
