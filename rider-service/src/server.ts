@@ -2,7 +2,7 @@ import { app } from './app';
 import { config } from './config';
 import { logger } from './config/logger';
 import { pool } from './db/pool';
-import {connectProducer} from '@cab/messaging'
+import { connectProducer } from '@cab/messaging';
 import { startTripCompletedConsumer } from './events/consumers/trip-completed.consumer';
 import { startUserCreatedConsumer } from './events/consumers/user-created.consumer';
 
