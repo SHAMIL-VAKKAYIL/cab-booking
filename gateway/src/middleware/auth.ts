@@ -38,7 +38,7 @@ export const authenticate = (
 
     next();
   } catch (err) {
-    //  logger.error({err},'jwt verification failed')
+     logger.error({err},'jwt verification failed')
     if (err instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ message: "Token expired" });
     }
