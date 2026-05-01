@@ -124,26 +124,26 @@ export class DriverService {
       await redis.geoAdd(DRIVER_LOCATION_KEY, {
         longitude: lng,
         latitude: lat,
-        member: currentDriver.id,
+        member: currentDriver.user_id,
       });
 
       await publishDriverOnline({
-        driverId: currentDriver.id,
+        driverId: currentDriver.user_id,
         vehicleType: currentDriver.vehicleType ?? "ECONOMY",
         lat,
         lng,
       });
 
-      logger.info({ userId, driverId: currentDriver.id }, "Driver online");
+      logger.info({ userId, driverId: currentDriver.user_id }, "Driver online");
     } else {
       // remove from Redis when going offline
-      await redis.zRem(DRIVER_LOCATION_KEY, currentDriver.id);
+      await redis.zRem(DRIVER_LOCATION_KEY, currentDriver.user_id);
 
       await publishDriverOffline({
-        driverId: currentDriver.id,
+        driverId: currentDriver.user_id,
       });
 
-      logger.info({ userId, driverId: currentDriver.id }, "Driver offline");
+      logger.info({ userId, driverId: currentDriver.user_id }, "Driver offline");
     }
 
     return updated;
@@ -179,7 +179,7 @@ export class DriverService {
     const existing = await db
       .select()
       .from(driver)
-      .where(eq(driver.id, driverId));
+      .where(eq(driver.user_id, driverId));
 
     if (existing.length === 0) {
       logger.warn({ driverId }, "Driver not found for rating update, skipping");
@@ -201,7 +201,7 @@ export class DriverService {
         totalRatings,
         updatedAt: new Date(),
       })
-      .where(eq(driver.id, driverId));
+      .where(eq(driver.user_id, driverId));
 
     logger.info(
       { driverId, averageRating, totalRatings },

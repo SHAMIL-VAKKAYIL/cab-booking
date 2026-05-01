@@ -32,7 +32,7 @@ COPY pnpm-lock.yaml ./
 COPY packages/ ./packages
 COPY driver-service/ ./driver-service
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/driver-service/dist ./driver-service/dist
 COPY --from=builder /app/packages/events/dist ./packages/events/dist
