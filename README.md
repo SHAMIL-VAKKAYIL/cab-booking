@@ -54,9 +54,9 @@ The system uses a hybrid communication model: HTTP for synchronous reads and gat
 | `trip-service`         | Full trip state machine, Redis live location tracking, Kafka consumers                             | ✅ Complete    |
 | `matching-service`     | Redis GeoSet driver proximity search, 5 Kafka consumers, 3 Redis data structures                   | ✅ Complete    |
 | `pricing-service`      | Haversine distance calculation, fare computation, pure Kafka (no HTTP, no DB)                      | ✅ Complete    |
-| `booking-saga-service` | Saga orchestrator for the booking flow, step-by-step coordination with compensation                | ✅ In Progress |
-| `payment-service`      | Payment processing, Kafka integration                                                              | ✅ In Progress |
-| `notification-service` | Event-driven notifications via Kafka                                                               | ✅ In Progress |
+| `booking-saga-service` | Saga orchestrator for the booking flow, step-by-step coordination with compensation                | ✅ Complete |
+| `payment-service`      | Payment processing, Kafka integration                                                              | ✅ Complete |
+| `notification-service` | Event-driven notifications via Kafka                                                               | ✅ Complete |
 
 ---
 
