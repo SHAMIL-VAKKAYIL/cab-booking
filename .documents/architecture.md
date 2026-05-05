@@ -17,109 +17,50 @@
 
 ```mermaid
 ---
+---
 config:
   layout: fixed
 ---
 flowchart TB
-    CLIENT["External Clients<br/>Web, Mobile, Third-party"]
-    INGRESS["Nginx Ingress Controller<br/>Load Balancer, SSL, Rate Limiting"]
-    GATEWAY["API Gateway<br/>Routing, Auth, Validation"]
+    A["Client\nWeb · Mobile · Third-party"] --> B["API Gateway\nRouting · Auth check · Rate limiting · Validation"]
+    B --> C["Auth service\nJWT · Roles"] & D["Rider service\nBook · Track"] & E["Driver service\nStatus · Location"] & F["Trip service\nLifecycle · Saga"]
+    C -- publishes --> G[["Kafka"]]
+    D -- publishes --> G
+    E -- publishes --> G
+    F -- publishes --> G
+    SA["Booking saga service\nOrchestrate · Compensate"] -- publishes --> G
+    G -- consumes --> H["Pricing service\nFare · Surge"] & I["Matching service\nFind nearest driver"] & J["Payment service\nCharge · Refund"] & K["Notification service\nPush · SMS · Email"] & SA
+    E -. read/write .-> M[("Redis\nDriver location · Session cache")]
+    F -. read/write .-> M
+    I -. read/write .-> M
+    C --> N[("auth_db\nusers · tokens")]
+    SA --> O[("booking_db\nbookings")]
+    F --> P[("trip_db\ntrips · events")]
+    E --> Q[("driver_db\ndrivers")]
+    J --> R[("payment_db\nledger")]
+    D --> S[("rider_db\nriders · profiles")]
+    PKG[["packages\nShared library · Types · observablity "]] -. used by .-> C & D & E & F & SA & H & I & J & K
 
-    AUTH["Auth Service<br/>JWT, Roles"]
-    RIDER["Rider Service<br/>Book, Track"]
-    DRIVER["Driver Service<br/>Status, Location"]
-    TRIP["Trip Service<br/>Lifecycle, Saga"]
-    BOOKING["Booking Saga Service<br/>Orchestrate, Compensate"]
-
-    KAFKA[["Kafka"]]
-    PRICING["Pricing Service<br/>Fare, Surge"]
-    MATCHING["Matching Service<br/>Find nearest driver"]
-    PAYMENT["Payment Service<br/>Charge, Refund"]
-    NOTIFY["Notification Service<br/>Push, SMS, Email"]
-
-    REDIS[("Redis<br/>Driver location, Session cache")]
-    AUTH_DB[("auth_db<br/>Users, Tokens")]
-    RIDER_DB[("rider_db<br/>Riders, Profiles")]
-    DRIVER_DB[("driver_db<br/>Drivers")]
-    TRIP_DB[("trip_db<br/>Trips, Events")]
-    BOOKING_DB[("booking_db<br/>Bookings")]
-    PAYMENT_DB[("payment_db<br/>Ledger")]
-
-    PACKAGES[["packages<br/>Shared library, Types, Observability"]]
-
-    JAEGER["Jaeger"]
-    PROMETHEUS["Prometheus"]
-    ISTIO["Istio Service Mesh"]
-
-    CLIENT --> INGRESS --> GATEWAY
-    GATEWAY --> AUTH
-    GATEWAY --> RIDER
-    GATEWAY --> DRIVER
-    GATEWAY --> TRIP
-
-    AUTH -- publishes --> KAFKA
-    RIDER -- publishes --> KAFKA
-    DRIVER -- publishes --> KAFKA
-    TRIP -- publishes --> KAFKA
-    BOOKING -- publishes --> KAFKA
-
-    KAFKA -- consumes --> PRICING
-    KAFKA -- consumes --> MATCHING
-    KAFKA -- consumes --> PAYMENT
-    KAFKA -- consumes --> NOTIFY
-    KAFKA -- consumes --> BOOKING
-
-    DRIVER -. read/write .-> REDIS
-    TRIP -. read/write .-> REDIS
-    MATCHING -. read/write .-> REDIS
-
-    AUTH --> AUTH_DB
-    RIDER --> RIDER_DB
-    DRIVER --> DRIVER_DB
-    TRIP --> TRIP_DB
-    BOOKING --> BOOKING_DB
-    PAYMENT --> PAYMENT_DB
-
-    PACKAGES -. used by .-> AUTH
-    PACKAGES -. used by .-> RIDER
-    PACKAGES -. used by .-> DRIVER
-    PACKAGES -. used by .-> TRIP
-    PACKAGES -. used by .-> BOOKING
-    PACKAGES -. used by .-> PRICING
-    PACKAGES -. used by .-> MATCHING
-    PACKAGES -. used by .-> PAYMENT
-    PACKAGES -. used by .-> NOTIFY
-
-    JAEGER -. traces .-> AUTH
-    JAEGER -. traces .-> TRIP
-    PROMETHEUS -. metrics .-> GATEWAY
-    PROMETHEUS -. metrics .-> KAFKA
-    ISTIO -. traffic policy .-> GATEWAY
-
-    style CLIENT fill:#1f2937,stroke:#9ca3af,color:#ffffff
-    style INGRESS fill:#111827,stroke:#9ca3af,color:#ffffff
-    style GATEWAY fill:#111827,stroke:#9ca3af,color:#ffffff
-    style AUTH fill:#047857,stroke:#10b981,color:#ffffff
-    style RIDER fill:#047857,stroke:#10b981,color:#ffffff
-    style DRIVER fill:#047857,stroke:#10b981,color:#ffffff
-    style TRIP fill:#047857,stroke:#10b981,color:#ffffff
-    style BOOKING fill:#047857,stroke:#10b981,color:#ffffff
-    style KAFKA fill:#b45309,stroke:#f59e0b,color:#ffffff
-    style PRICING fill:#7c2d12,stroke:#fb923c,color:#ffffff
-    style MATCHING fill:#7c2d12,stroke:#fb923c,color:#ffffff
-    style PAYMENT fill:#7c2d12,stroke:#fb923c,color:#ffffff
-    style NOTIFY fill:#7c2d12,stroke:#fb923c,color:#ffffff
-    style REDIS fill:#1d4ed8,stroke:#60a5fa,color:#ffffff
-    style AUTH_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style RIDER_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style DRIVER_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style TRIP_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style BOOKING_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style PAYMENT_DB fill:#365314,stroke:#84cc16,color:#ffffff
-    style PACKAGES fill:#374151,stroke:#d1d5db,color:#ffffff
-    style JAEGER fill:#16a34a,stroke:#86efac,color:#ffffff
-    style PROMETHEUS fill:#a21caf,stroke:#f0abfc,color:#ffffff
-    style ISTIO fill:#dc2626,stroke:#fca5a5,color:#ffffff
+    style A fill:#D3D1C7,stroke:#888780,color:#444441
+    style B fill:#CECBF6,stroke:#534AB7,color:#3C3489
+    style C fill:#9FE1CB,stroke:#0F6E56,color:#085041
+    style D fill:#9FE1CB,stroke:#0F6E56,color:#085041
+    style E fill:#9FE1CB,stroke:#0F6E56,color:#085041
+    style F fill:#9FE1CB,stroke:#0F6E56,color:#085041
+    style G fill:#FAC775,stroke:#BA7517,color:#633806
+    style SA fill:#9FE1CB,stroke:#0F6E56,color:#085041
+    style H fill:#F5C4B3,stroke:#993C1D,color:#712B13
+    style I fill:#F5C4B3,stroke:#993C1D,color:#712B13
+    style J fill:#F5C4B3,stroke:#993C1D,color:#712B13
+    style K fill:#F5C4B3,stroke:#993C1D,color:#712B13
+    style M fill:#B5D4F4,stroke:#185FA5,color:#0C447C
+    style N fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style O fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style P fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style Q fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style R fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style S fill:#C0DD97,stroke:#3B6D11,color:#27500A
+    style PKG fill:#D3D1C7,stroke:#5F5E5A,color:#2C2C2A
 ```
 
 The cab booking platform is organized as a microservices system behind an ingress controller and API gateway. User-facing clients call the gateway, which routes requests to domain services. Services own their data stores and exchange business events through Kafka.
