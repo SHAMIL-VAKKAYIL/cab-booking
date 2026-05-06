@@ -9,14 +9,12 @@
 - [Design Patterns](#design-patterns)
 - [Scalability Strategy](#scalability-strategy)
 - [Monitoring and Observability](#monitoring-and-observability)
-<!-- - [High Availability](#high-availability) -->
 
 ## System Architecture
 
 ### Architecture Diagram
 
 ```mermaid
----
 ---
 config:
   layout: fixed
@@ -39,7 +37,7 @@ flowchart TB
     E --> Q[("driver_db\ndrivers")]
     J --> R[("payment_db\nledger")]
     D --> S[("rider_db\nriders · profiles")]
-    PKG[["packages\nShared library · Types · observablity "]] -. used by .-> C & D & E & F & SA & H & I & J & K
+    PKG[["packages\nShared library · Types · observability "]] -. used by .-> C & D & E & F & SA & H & I & J & K
 
     style A fill:#D3D1C7,stroke:#888780,color:#444441
     style B fill:#CECBF6,stroke:#534AB7,color:#3C3489
@@ -125,9 +123,6 @@ flowchart TB
     GATEWAY --> DRIVER
     GATEWAY --> RIDER
     GATEWAY --> TRIP
-    GATEWAY --> BOOKING
-    GATEWAY --> PAYMENT
-    GATEWAY --> NOTIFICATION
 
     AUTH <--> KAFKA
     RIDER <--> KAFKA
@@ -180,7 +175,7 @@ flowchart TB
 
 ### Service Discovery
 
-- Gateway discovers services through environment variables such as `AUTH_SERVICE_URL`, `DRIVER_SERVICE_URL`, `RIDER_SERVICE_URL`, `TRIP_SERVICE_URL`, `BOOKING_SERVICE_URL`, `PAYMENT_SERVICE_URL`, `NOTIFICATION_SERVICE_URL`, and `MATCHING_SERVICE_URL`.
+- Gateway discovers services through environment variables such as `AUTH_SERVICE_URL`, `DRIVER_SERVICE_URL`, `RIDER_SERVICE_URL`, `TRIP_SERVICE_URL`, `BOOKING_SERVICE_URL`, `PAYMENT_SERVICE_URL`,`PRICING_SERVICE_URL`, `NOTIFICATION_SERVICE_URL`, and `MATCHING_SERVICE_URL`.
 - Gateway local defaults point to `http://localhost:4001` through `http://localhost:4009`.
 - In Docker, those URLs should point to Docker DNS names on `cab_network`, for example `http://auth-service:4001`, `http://driver-service:4002`, and `http://rider-service:4003`.
 - Kafka clients use `KAFKA_BROKER`, defaulting to `localhost:9092`.
@@ -209,8 +204,7 @@ flowchart TB
 - Enables CORS.
 - Validates JWT bearer tokens for protected routes.
 - Enforces role-based access with `RIDER`, `DRIVER`, and `ADMIN` roles.
-- Proxies public auth traffic to Auth Service.
-- Proxies protected driver, rider, trip, booking, payment, and notification routes.
+-  Proxies all service traffic including auth, driver, rider, trip, booking, payment, notification, pricing, and matching routes.
 
 **Routes:**
 
@@ -218,10 +212,6 @@ flowchart TB
 - `/api/driver` -> Driver Service, `DRIVER` or `ADMIN`.
 - `/api/rider` -> Rider Service, `RIDER` or `ADMIN`.
 - `/api/trip` -> Trip Service, `RIDER` or `DRIVER`.
-- `/api/booking` -> Booking Saga Service, `RIDER` or `DRIVER`.
-- `/api/payment` -> Payment Service, `RIDER` or `DRIVER`.
-- `/api/notification` -> Notification Service, `RIDER` or `DRIVER`.
-- Pricing and matching proxy routes exist in code but are currently commented out.
 
 **Technology:** Node.js + Express + Helmet + Morgan + Express Rate Limit + HTTP Proxy Middleware  
 **Database:** None, stateless  
@@ -406,7 +396,6 @@ flowchart TB
 **Routes:**
 
 - `GET /health`
-- No business HTTP route is currently mounted in `app.ts`; this service is currently Kafka-driven.
 
 **Events Consumed:**
 
@@ -1011,15 +1000,8 @@ sequenceDiagram
 - Provides a foundation for readiness and liveness probes.
 
 ---
-
-### 5. Current Observability Gaps
-
-**Not Yet Implemented in Code:**
-
-- Prometheus metrics endpoint.
-- Jaeger/OpenTelemetry distributed tracing.
-- Central log aggregation.
-- Alerting rules.
-- Request correlation IDs across HTTP and Kafka.
-
-These tools appear in the architecture direction, but the current codebase mainly implements structured logging, request logging, error logging, and health checks.
++ ### 5. Planned Observability Additions
++ The current implementation covers structured logging, request logging, centralized error handling, and health checks. The following are planned for the next phase:
++ - **Distributed tracing** via OpenTelemetry and Jaeger...
++ - **Metrics endpoint** via Prometheus...
++ (etc.)
