@@ -2,46 +2,7 @@
 
 A production-grade cab booking system built as a Node.js microservices monorepo. The focus is on real distributed systems concerns: event-driven coordination, service isolation, and the architectural trade-offs that come with decomposing a booking flow into independently deployable services.
 
----
 
-## Architecture Overview
-
-```
-                          ┌──────────────────┐
-                          │   API Gateway    │
-                          │  (JWT Validation)│
-                          │  (Role Routing)  │
-                          └────────┬─────────┘
-                                   │ user-id / user-role headers
-              ┌────────────────────┼────────────────────┐
-              │                    │                    │
-       ┌──────▼──────┐    ┌───────▼──────┐    ┌───────▼──────┐
-       │rider-service│    │driver-service│    │ auth-service │
-       └─────────────┘    └──────────────┘    └──────────────┘
-              │                    │
-              └────────┬───────────┘
-                       │ Kafka Events
-        ┌──────────────┼──────────────────────┐
-        │              │                      │
-┌───────▼──────┐ ┌─────▼──────┐    ┌─────────▼───────┐
-│booking-saga  │ │trip-service│    │matching-service │
-│  -service    │ │            │    │(Redis GeoSet)   │
-└───────┬──────┘ └─────┬──────┘    └─────────────────┘
-        │              │
-┌───────▼──────┐ ┌─────▼──────┐
-│  payment-    │ │  pricing-  │
-│  service     │ │  service   │
-└──────────────┘ └────────────┘
-        │
-┌───────▼──────┐
-│notification- │
-│  service     │
-└──────────────┘
-```
-
-The system uses a hybrid communication model: HTTP for synchronous reads and gateway routing, Kafka for all asynchronous event coordination. The booking flow itself is orchestrated via a saga, while post-confirmation events (trip updates, notifications) use choreography.
-
----
 
 ## Services
 
@@ -216,7 +177,7 @@ pnpm --filter rider-service drizzle-kit migrate
 Each service requires a `.env` file. Common variables across services:
 
 ```env
-PORT=3001
+PORT=4001
 DATABASE_URL=postgresql://user:password@localhost:5432/db_name
 KAFKA_BROKERS=localhost:9092
 REDIS_URL=redis://localhost:6379
@@ -234,15 +195,7 @@ REFRESH_TOKEN_EXPIRES_IN=7d
 ACCESS_TOKEN_SECRET=your_access_secret
 ACCESS_TOKEN_EXPIRES_IN=15M
 
-# gateway only
-AUTH_SERVICE_URL=http://localhost:3001
-RIDER_SERVICE_URL=http://localhost:3002
-DRIVER_SERVICE_URL=http://localhost:3003
-TRIP_SERVICE_URL=http://localhost:3006
-BOOKING_SERVICE_URL=http://localhost:3004
-PAYMENT_SERVICE_URL=http://localhost:3008
-PRICING_SERVICE_URL=http://localhost:3007
-NOTIFICATION_SERVICE_URL=http://localhost:3009
+
 ```
 
 ---
@@ -253,7 +206,6 @@ NOTIFICATION_SERVICE_URL=http://localhost:3009
 - Google Maps API for accurate distance and duration calculation
 - Dynamic surge pricing based on supply and demand ratio
 - Driver cancellation flow with penalty logic
-- Full Docker Compose setup for all services
 - Kubernetes deployment manifests
 - CI/CD pipeline with GitHub Actions
 
@@ -261,9 +213,9 @@ NOTIFICATION_SERVICE_URL=http://localhost:3009
 
 ## Project Status
 
-Active development. Core services are complete and tested. The booking saga, payment, and notification services are in progress, targeting completion in early April 2026.
+All services are complete. The platform covers the full booking lifecycle: authentication, ride requesting, driver matching, saga-orchestrated booking flow, trip state management, pricing, payment, and notifications.
 
-This project is being built as a realistic demonstration of distributed systems patterns: saga orchestration, event-driven architecture, CQRS for read models, and geospatial indexing. It is not a tutorial project.
+This project demonstrates production-grade distributed systems patterns: saga orchestration, event-driven architecture, CQRS for read models, and geospatial indexing. It is not a tutorial project.
 
 ---
 
