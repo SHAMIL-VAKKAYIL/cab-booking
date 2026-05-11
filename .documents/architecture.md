@@ -17,17 +17,14 @@
 ```mermaid
 ---
 config:
-  layout: fixed
+  layout: elk
 ---
 flowchart TB
     A["Client\nWeb · Mobile · Third-party"] --> B["API Gateway\nRouting · Auth check · Rate limiting · Validation"]
     B --> C["Auth service\nJWT · Roles"] & D["Rider service\nBook · Track"] & E["Driver service\nStatus · Location"] & F["Trip service\nLifecycle · Saga"]
     C -- publishes --> G[["Kafka"]]
-    D -- publishes --> G
-    E -- publishes --> G
-    F -- publishes --> G
-    SA["Booking saga service\nOrchestrate · Compensate"] -- publishes --> G
-    G -- consumes --> H["Pricing service\nFare · Surge"] & I["Matching service\nFind nearest driver"] & J["Payment service\nCharge · Refund"] & K["Notification service\nPush · SMS · Email"] & SA
+    G <-- publishes/consumes --> D & E & F & SA["Booking saga service\nOrchestrate · Compensate"] & H["Pricing service\nFare · Surge"] & I["Matching service\nFind nearest driver"] & J["Payment service\nCharge · Refund"]
+    G -- consumes --> K["Notification service\nPush · SMS · Email"]
     E -. read/write .-> M[("Redis\nDriver location · Session cache")]
     F -. read/write .-> M
     I -. read/write .-> M
@@ -37,7 +34,7 @@ flowchart TB
     E --> Q[("driver_db\ndrivers")]
     J --> R[("payment_db\nledger")]
     D --> S[("rider_db\nriders · profiles")]
-    PKG[["packages\nShared library · Types · observability "]] -. used by .-> C & D & E & F & SA & H & I & J & K
+    PKG[["packages\nShared library · Types · observability"]] -. used by .-> C & D & E & F & SA & H & I & J & K
 
     style A fill:#D3D1C7,stroke:#888780,color:#444441
     style B fill:#CECBF6,stroke:#534AB7,color:#3C3489
