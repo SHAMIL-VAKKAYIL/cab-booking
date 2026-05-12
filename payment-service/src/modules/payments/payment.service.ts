@@ -6,7 +6,6 @@ import { CreatePaymentInput, RefundPaymentInput } from "../../types";
 import { logger } from "../../config/logger";
 import {
   publishPaymentFailed,
-  publishPaymentSuccess,
 } from "../../events/producers/payment.producer";
 
 export class PaymentService {
@@ -75,7 +74,7 @@ export class PaymentService {
       const [updated] = await db
         .update(payments)
         .set({
-          status: "SUCCESS",
+          status: "PENDING",
           transactionId: orderId,
           processedAt: new Date(),
           updatedAt: new Date(),
@@ -87,17 +86,6 @@ export class PaymentService {
         { tripId, paymentId: payment.id },
         "Payment processed successfully",
       );
-
-      await publishPaymentSuccess({
-        paymentId: payment.id,
-        tripId,
-        riderId,
-        riderEmail,
-        driverId,
-        amount,
-        currency,
-        transactionId: order.id,
-      });
 
       return updated;
       // return payment;
@@ -180,3 +168,4 @@ export class PaymentService {
     }
   }
 }
+
