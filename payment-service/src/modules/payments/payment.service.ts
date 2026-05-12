@@ -167,5 +167,28 @@ export class PaymentService {
       throw new Error("Failed to initiate refund");
     }
   }
+
+  async getPaymentByTrip(tripId: string) {
+  const existing = await db
+    .select()
+    .from(payments)
+    .where(eq(payments.tripId, tripId));
+
+  if (existing.length === 0) {
+    throw new Error('Payment not found');
+  }
+
+  const payment = existing[0];
+
+  // only return what frontend needs, don't expose internal fields
+  return {
+    paymentId: payment.id,
+    tripId: payment.tripId,
+    amount: Number(payment.amount),
+    currency: payment.currency,
+    status: payment.status,
+    orderId: payment.transactionId, // this is order_xxx at PENDING stage
+  };
+}
 }
 
