@@ -148,7 +148,7 @@ export class RiderService {
     const existingTrip = await db.select().from(rideHistory).where(eq(rideHistory.tripId, tripId));
     if (existingTrip.length > 0) {
       logger.info({ existingTrip }, 'trip already exists');
-      throw new Error('Trip already exists');
+      return;
     }
     await db.insert(rideHistory).values({
       riderId,
