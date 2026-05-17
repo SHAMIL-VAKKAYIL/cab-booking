@@ -1,0 +1,44 @@
+global:
+  scrape_interval: 30s      # scrape every 15 seconds
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: 'gateway'
+    static_configs:
+      - targets: ['gateway:4000']
+
+  - job_name: 'auth-service'
+    static_configs:
+      - targets: ['authentication:4001']
+
+  - job_name: 'rider-service'
+    static_configs:
+      - targets: ['rider-service:4003']
+
+  - job_name: 'driver-service'
+    static_configs:
+      - targets: ['driver-service:4002']
+
+  - job_name: 'trip-service'
+    static_configs:
+      - targets: ['trip-service:4004']
+
+  - job_name: 'booking-saga-service'
+    static_configs:
+      - targets: ['booking-saga:4005']
+
+  - job_name: 'pricing-service'
+    static_configs:
+      - targets: ['pricing-service:4006']
+
+  - job_name: 'payment-service'
+    static_configs:
+      - targets: ['payment-service:4007']
+
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:4008']
+
+  - job_name: 'matching-service'
+    static_configs:
+      - targets: ['matching-service:4009']
