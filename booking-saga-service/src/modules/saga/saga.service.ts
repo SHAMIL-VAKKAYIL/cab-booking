@@ -18,6 +18,13 @@ import {
   publishBookingFailed,
 } from "../../events/producer/saga.producer";
 
+import {
+  sagaStartedTotal,
+  sagaConfirmedTotal,
+  sagaFailedTotal,
+  sagaDuration,
+} from "@cab/observability";
+
 export class SagaService {
   //!  ride.requested consumed
   async startSaga(input: CreateSagaInput) {
@@ -33,7 +40,7 @@ export class SagaService {
       dropoffLng,
       vehicleType,
     } = input;
-
+    sagaDuration;
     // idempotency — don't create duplicate sagas
     const existing = await db
       .select()
@@ -46,6 +53,7 @@ export class SagaService {
     }
 
     logger.info(input);
+    sagaStartedTotal.inc();
 
     const [saga] = await db
       .insert(bookingSagas)
@@ -180,11 +188,9 @@ export class SagaService {
   //! trip create reply consume
   async handleTripCreated(input: UpdateSagaTripInput) {
     const { rideId, tripId } = input;
-    console.log(rideId,tripId);
-    
+
     logger.info({ rideId, tripId }, "trip created");
     const saga = await this.findByRideId(rideId);
-logger.info({saga},'saga 2')
     if (!saga) {
       logger.warn({ rideId }, "Saga not found for trip reply, skipping");
       return;
@@ -198,6 +204,10 @@ logger.info({saga},'saga 2')
       );
       return;
     }
+    const durationSeconds =
+      (Date.now() - new Date(saga.createdAt).getTime()) / 1000;
+    sagaDuration.observe({}, durationSeconds);
+    sagaConfirmedTotal.inc();
 
     const [updated] = await db
       .update(bookingSagas)
@@ -249,6 +259,10 @@ logger.info({saga},'saga 2')
       );
       return;
     }
+    const durationSeconds =
+      (Date.now() - new Date(saga.createdAt).getTime()) / 1000;
+    sagaDuration.observe({}, durationSeconds);
+    sagaFailedTotal.inc();
 
     await db
       .update(bookingSagas)
@@ -304,13 +318,13 @@ logger.info({saga},'saga 2')
   }
 
   async findByRideId(rideId: string) {
-  logger.info({rideId},'check rider id')
-  
+    logger.info({ rideId }, "check rider id");
+
     const [saga] = await db
       .select()
       .from(bookingSagas)
       .where(eq(bookingSagas.rideId, rideId));
-      logger.info({saga},'check saga')
+    logger.info({ saga }, "check saga");
     return saga ?? null;
   }
 }
