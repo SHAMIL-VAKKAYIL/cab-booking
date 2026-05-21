@@ -1,7 +1,10 @@
 import { Producer } from "kafkajs";
 import { logger } from "./config";
 import { kafka } from "./kafka";
-
+import {
+  kafkaMessagesConsumed,
+  kafkaMessageDuration,
+} from "@cab/observability";
 export interface ConsumerConfig {
   groupId: string;
   topic: string;
@@ -51,13 +54,15 @@ export const createConsumer = async (
   await admin.connect();
   const topicsToCreate = [config.topic];
   if (config.dlqTopic) topicsToCreate.push(config.dlqTopic);
-  
+
   try {
     const existingTopics = await admin.listTopics();
-    const missingTopics = topicsToCreate.filter(t => !existingTopics.includes(t));
+    const missingTopics = topicsToCreate.filter(
+      (t) => !existingTopics.includes(t),
+    );
     if (missingTopics.length > 0) {
       await admin.createTopics({
-        topics: missingTopics.map(t => ({ topic: t, numPartitions: 1 }))
+        topics: missingTopics.map((t) => ({ topic: t, numPartitions: 1 })),
       });
       logger.info({ topics: missingTopics }, "Created missing Kafka topics");
     }
@@ -77,9 +82,13 @@ export const createConsumer = async (
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
+      const msgStartTime = Date.now();
+
       let parsed: any = null;
       try {
         const value = message.value?.toString();
+        kafkaMessagesConsumed.inc({ topic: config.topic });
+
         parsed = value ? JSON.parse(value) : null;
       } catch (error) {
         logger.error({ error }, "consumer faild to process");
@@ -116,6 +125,12 @@ export const createConsumer = async (
           },
           config.retries ?? 3,
           config.retryDelayMs ?? 1000,
+        );
+        const msgEndTime = Date.now();
+
+        kafkaMessageDuration.observe(
+          { topic: config.topic },
+          (msgEndTime - msgStartTime) / 1000,
         );
       } catch (error) {
         logger.error(
