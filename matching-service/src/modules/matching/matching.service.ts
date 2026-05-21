@@ -6,6 +6,7 @@ import {
 } from "../../lib/redis";
 import { logger } from "../../config/logger";
 import { FindDriverInput, DriverLocation } from "../../types";
+import { driverMatchAttempts, driverMatchSuccess, driverMatchFailed } from '@cab/observability'
 
 const DEFAULT_RADIUS_KM = 5;
 const MAX_RADIUS_KM = 20;
@@ -14,6 +15,7 @@ const SEARCH_COUNT = 20; // fetch top 20 nearest, then filter
 export class MatchingService {
 
   async findNearestDriver(input: FindDriverInput): Promise<string | null> {
+  driverMatchAttempts.inc()
     const {
       pickupLat,
       pickupLng,
@@ -41,6 +43,7 @@ export class MatchingService {
           radiusKm: radiusKm + 2
         })
       }
+      driverMatchFailed.inc()
 
       return null
     }
@@ -62,8 +65,11 @@ export class MatchingService {
 
     if (!matchedDriverId) {
       logger.warn({ vehicleType, nearbyCount: nearbyDrivers.length }, 'No available drivers with matching vehicle type')
+      driverMatchFailed.inc()
       return null
     }
+
+    driverMatchSuccess.inc()
 
     logger.info({ matchedDriverId, vehicleType }, 'Driver found')
     return matchedDriverId
