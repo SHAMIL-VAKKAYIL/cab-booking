@@ -20,6 +20,9 @@ export const registerHandler = async (
   try {
     const { email, password, role }: RegisterRequest = req.body;
     const userRegister = await authService.register({ email, password, role });
+    if (!userRegister) {
+      return res.status(400).json({ error: "Failed to register user" });
+    }
 
     logger.info({ email: userRegister.email }, "User registered successfully");
 

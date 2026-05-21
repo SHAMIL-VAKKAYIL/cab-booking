@@ -1,5 +1,5 @@
 # ─── Stage 1: Builder ────────────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 RUN npm install -g pnpm
 
@@ -8,6 +8,7 @@ WORKDIR /app
 
 # copy workspace config first
 COPY pnpm-workspace.yaml ./
+
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
@@ -28,7 +29,7 @@ RUN pnpm --filter @cab/observability build
 RUN pnpm --filter auth-service build
 
 # ─── Stage 2: Production image ───────────────────────────────────────────────
-FROM node:22-alpine AS production
+FROM node:20-alpine AS production
 
 
 RUN npm install -g pnpm
@@ -36,6 +37,7 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 COPY pnpm-workspace.yaml ./
+
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 

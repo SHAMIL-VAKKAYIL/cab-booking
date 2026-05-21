@@ -6,18 +6,18 @@ import { connectProducer } from "@cab/messaging";
 
 const PORT = config.port;
 
-const start = async () => {
+export const start = async () => {
   try {
     await connectProducer();
-
-    await pool.connect();
-    logger.info({}, "database Connected");
+    await pool.query("SELECT 1");
+    logger.info({}, "database connected");
     app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
     });
   } catch (err) {
-    logger.error({ err }, "Database connection failed");
+    logger.error({ err }, "startup failed");
     process.exit(1);
   }
 };
+
 start();
