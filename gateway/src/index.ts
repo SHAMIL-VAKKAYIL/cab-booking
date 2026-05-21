@@ -3,7 +3,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
-import { errorHandler } from "@cab/observability";
+import { errorHandler, metricsMiddleware, registry } from "@cab/observability";
 import proxyRouter from "./routes/proxy";
 import { logger } from "./middleware/logger";
 import { config } from "./config";
@@ -25,8 +25,17 @@ app.use(
   }),
 );
 
+
 app.use(cors());
+app.use(metricsMiddleware)
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', registry.contentType)
+  res.send(await registry.metrics())
+})
+
 app.use(proxyRouter);
+
 
 app.use(errorHandler);
 
