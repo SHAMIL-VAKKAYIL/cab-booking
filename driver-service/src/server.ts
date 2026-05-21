@@ -9,18 +9,20 @@ import { startDriverRatedConsumer } from "./events/consumer/driver-rated.consume
 
 const start = async () => {
   try {
-    await pool.connect();
-    logger.info("Database connected");
 
-    await connectRedis();
-    logger.info("Redis connected");
 
     await connectProducer();
     logger.info("Kafka producer connected");
 
-    await startUserCreatedSubscriber();
+    await pool.connect();
+    logger.info("Database connected");
+
+    await startUserCreatedSubscriber(); 
     await startDriverRatedConsumer();
     logger.info("Kafka consumers started");
+
+    await connectRedis();
+    logger.info("Redis connected");
 
     app.listen(config.port, () => {
       logger.info(`Driver service running on port ${config.port}`);

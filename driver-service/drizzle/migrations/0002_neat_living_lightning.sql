@@ -1,1 +1,0 @@
-ALTER TABLE "drivers" ADD COLUMN "name" varchar(100) NOT NULL;
