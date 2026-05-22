@@ -62,7 +62,7 @@ The cab booking platform is organized as a microservices system behind an ingres
 
 ## Infrastructure Diagram
 
-The local infrastructure is defined by `docker-compose.yml` for application services and `docker-compose.kafka-redis.yml` for Kafka and Redis. All containers are attached to the external Docker network `cab_network`.
+The local infrastructure is defined by `docker-compose.yml` for application services and `docker-compose.kafka-redis.yml` for Kafka, Redis, Prometheus, and Grafana. All containers are attached to the external Docker network `cab_network`.
 
 ```mermaid
 flowchart TB
@@ -81,6 +81,8 @@ flowchart TB
         MATCHING_PORT["localhost:4009"]
         KAFKA_PORT["localhost:9092 / 9093"]
         REDIS_PORT["localhost:6379"]
+        PROMETHEUS_PORT["localhost:9090"]
+        GRAFANA_PORT["localhost:3100"]
     end
 
     subgraph NETWORK["Docker Network: cab_network"]
@@ -96,9 +98,11 @@ flowchart TB
         MATCHING["matching-service<br/>container: matching-service<br/>port 4009"]
         KAFKA["kafka<br/>Apache Kafka 3.9.2<br/>ports 9092 / 9093"]
         REDIS["redis<br/>Redis 8.6.2 Alpine<br/>port 6379"]
+        PROMETHEUS["prometheus<br/>prom/prometheus<br/>port 9090"]
+        GRAFANA["grafana<br/>grafana/grafana<br/>port 3100"]
     end
 
-    POSTGRES[("PostgreSQL<br/>Configured by DB_HOST / DB_NAME<br/>Not defined in compose files")]
+    POSTGRES[("PostgreSQL<br/>Cloud hosted via Neon<br/>Not defined in compose files")]
     GMAIL["Gmail SMTP<br/>GMAIL_USER / GMAIL_APP_PASSWORD"]
     RAZORPAY["Razorpay API<br/>RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET"]
 
@@ -115,6 +119,8 @@ flowchart TB
     MATCHING_PORT -. host access .-> MATCHING
     KAFKA_PORT -. host access .-> KAFKA
     REDIS_PORT -. host access .-> REDIS
+    PROMETHEUS_PORT -. host access .-> PROMETHEUS
+    GRAFANA_PORT -. host access .-> GRAFANA
 
     GATEWAY --> AUTH
     GATEWAY --> DRIVER
@@ -142,6 +148,18 @@ flowchart TB
     BOOKING --> POSTGRES
     PAYMENT --> POSTGRES
 
+    PROMETHEUS -. scrapes /metrics .-> GATEWAY
+    PROMETHEUS -. scrapes /metrics .-> AUTH
+    PROMETHEUS -. scrapes /metrics .-> RIDER
+    PROMETHEUS -. scrapes /metrics .-> DRIVER
+    PROMETHEUS -. scrapes /metrics .-> TRIP
+    PROMETHEUS -. scrapes /metrics .-> BOOKING
+    PROMETHEUS -. scrapes /metrics .-> PRICING
+    PROMETHEUS -. scrapes /metrics .-> PAYMENT
+    PROMETHEUS -. scrapes /metrics .-> NOTIFICATION
+    PROMETHEUS -. scrapes /metrics .-> MATCHING
+    GRAFANA -. queries .-> PROMETHEUS
+
     NOTIFICATION --> GMAIL
     PAYMENT --> RAZORPAY
 ```
@@ -162,13 +180,16 @@ flowchart TB
 | `matching-service` | Matching Service | `4009` | `4009` | `docker-compose.yml` |
 | `kafka` | Kafka Broker / Controller | `9092`, `9093` | `9092`, `9093` | `docker-compose.kafka-redis.yml` |
 | `redis` | Redis | `6379` | `6379` | `docker-compose.kafka-redis.yml` |
+| `prometheus` | Prometheus | `9090` | `9090` | `docker-compose.kafka-redis.yml` |
+| `grafana` | Grafana | `3100` | `3000` | `docker-compose.kafka-redis.yml` |
 
 ### Networking
 
 - Both compose files use the same external Docker network: `cab_network`.
 - Containers on `cab_network` can reach each other by Docker service/container DNS names.
 - The application compose file does not define Kafka or Redis directly; those run from `docker-compose.kafka-redis.yml`.
-- PostgreSQL containers are not defined in the current compose files. Database connectivity is supplied through each service `.env` file with `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, and `DB_PORT`.
+- PostgreSQL is cloud-hosted via Neon. Database connectivity is supplied through each service `.env` file via `DATABASE_URL`.
+- Prometheus and Grafana run from `docker-compose.kafka-redis.yml` on the same `cab_network` as all application services.
 
 ### Service Discovery
 
@@ -177,6 +198,7 @@ flowchart TB
 - In Docker, those URLs should point to Docker DNS names on `cab_network`, for example `http://auth-service:4001`, `http://driver-service:4002`, and `http://rider-service:4003`.
 - Kafka clients use `KAFKA_BROKER`, defaulting to `localhost:9092`.
 - Redis clients use `REDIS_URL`, defaulting to `redis://localhost:6379`.
+- Prometheus scrapes each service at `GET /metrics` using container DNS names defined in `prometheus.yml`.
 - Services load their runtime configuration from their own `.env` files through the compose `env_file` entries.
 
 ### Exposed Ports
@@ -185,6 +207,8 @@ flowchart TB
 - `4001` to `4009` expose individual services for direct local testing and health checks.
 - `9092` and `9093` expose Kafka broker/controller ports.
 - `6379` exposes Redis.
+- `9090` exposes Prometheus UI for metric queries.
+- `3100` exposes Grafana UI for dashboards.
 - External integrations are configured through environment variables: Gmail SMTP for Notification Service and Razorpay for Payment Service.
 
 ## Microservices Overview
@@ -201,7 +225,8 @@ flowchart TB
 - Enables CORS.
 - Validates JWT bearer tokens for protected routes.
 - Enforces role-based access with `RIDER`, `DRIVER`, and `ADMIN` roles.
--  Proxies all service traffic including auth, driver, rider, trip, booking, payment, notification, pricing, and matching routes.
+- Proxies all service traffic including auth, driver, rider, trip, booking, payment, notification, pricing, and matching routes.
+- Exposes `GET /metrics` for Prometheus scraping.
 
 **Routes:**
 
@@ -209,6 +234,7 @@ flowchart TB
 - `/api/driver` -> Driver Service, `DRIVER` or `ADMIN`.
 - `/api/rider` -> Rider Service, `RIDER` or `ADMIN`.
 - `/api/trip` -> Trip Service, `RIDER` or `DRIVER`.
+- `GET /metrics` -> Prometheus metrics endpoint.
 
 **Technology:** Node.js + Express + Helmet + Morgan + Express Rate Limit + HTTP Proxy Middleware  
 **Database:** None, stateless  
@@ -229,6 +255,7 @@ flowchart TB
 - Logout handling.
 - Store user email, hashed password, role, and verification status.
 - Publish `user.created` events after registration.
+- Exposes `GET /metrics` for Prometheus scraping.
 
 **Routes:**
 
@@ -237,13 +264,14 @@ flowchart TB
 - `POST /v1/logout`
 - `POST /v1/refresh-token`
 - `GET /health`
+- `GET /metrics`
 
 **Events Published:**
 
 - `user.created`
 
 **Technology:** Node.js + Express + Drizzle ORM + PostgreSQL + bcrypt + jsonwebtoken  
-**Database:** PostgreSQL via `DB_NAME`, table: `users`  
+**Database:** PostgreSQL via Neon, table: `users`  
 **Port:** `4001`
 
 ---
@@ -261,6 +289,8 @@ flowchart TB
 - Records completed trips into rider ride history.
 - Allows riders to rate drivers after completed trips.
 - Publishes driver rating events.
+- Exposes `GET /metrics` for Prometheus scraping.
+- Tracks `ride_requests_total` business metric.
 
 **Routes:**
 
@@ -276,6 +306,7 @@ flowchart TB
 - `POST /v1/rides/request`
 - `DELETE /v1/rides/:rideId/cancel`
 - `GET /health`
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -289,7 +320,7 @@ flowchart TB
 - `driver.rated`
 
 **Technology:** Node.js + Express + Drizzle ORM + PostgreSQL + Kafka packages  
-**Database:** PostgreSQL via `DB_NAME`, tables: `riders`, `ride_history`, `ratings`, `saved_places`  
+**Database:** PostgreSQL via Neon, tables: `riders`, `ride_history`, `ratings`, `saved_places`  
 **Port:** `4003`
 
 ---
@@ -307,6 +338,7 @@ flowchart TB
 - Writes online driver location to Redis.
 - Publishes driver online/offline events for matching.
 - Updates average rating and total rating count when `driver.rated` is consumed.
+- Exposes `GET /metrics` for Prometheus scraping.
 
 **Routes:**
 
@@ -316,6 +348,7 @@ flowchart TB
 - `PUT /v1/toggle-availability`
 - `GET /v1/rating`
 - `GET /health`
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -328,7 +361,7 @@ flowchart TB
 - `driver.offline`
 
 **Technology:** Node.js + Express + Drizzle ORM + PostgreSQL + Redis + Kafka packages  
-**Database:** PostgreSQL via `DB_NAME`, table: `drivers`; Redis for driver location  
+**Database:** PostgreSQL via Neon, table: `drivers`; Redis for driver location  
 **Port:** `4002`
 
 ---
@@ -346,6 +379,8 @@ flowchart TB
 - Stores live trip location in Redis.
 - Emits Socket.IO `location_updated` events for live tracking.
 - Publishes trip created, started, completed, and cancelled events.
+- Exposes `GET /metrics` for Prometheus scraping.
+- Tracks `active_trips`, `trip_completed_total`, and `trip_cancelled_total` business metrics.
 
 **Routes:**
 
@@ -356,6 +391,7 @@ flowchart TB
 - `GET /v1/trips/:tripId/location`
 - `GET /v1/trips/active`
 - `GET /health`
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -370,7 +406,7 @@ flowchart TB
 - `trip.cancelled`
 
 **Technology:** Node.js + Express + Socket.IO + Drizzle ORM + PostgreSQL + Redis + Kafka packages  
-**Database:** PostgreSQL via `DB_NAME`, table: `trips`; Redis for live trip location  
+**Database:** PostgreSQL via Neon, table: `trips`; Redis for live trip location  
 **Port:** `4004`
 
 ---
@@ -389,10 +425,13 @@ flowchart TB
 - Confirms booking after trip creation succeeds.
 - Fails the saga and releases a driver when compensation is needed.
 - Handles rider cancellation before confirmation.
+- Exposes `GET /metrics` for Prometheus scraping.
+- Tracks `saga_started_total`, `saga_confirmed_total`, `saga_failed_total`, and `saga_duration_seconds` business metrics.
 
 **Routes:**
 
 - `GET /health`
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -412,7 +451,7 @@ flowchart TB
 - `booking.failed`
 
 **Technology:** Node.js + Express health endpoint + Drizzle ORM + PostgreSQL + Kafka packages  
-**Database:** PostgreSQL via `DB_NAME`, table: `booking_sagas`  
+**Database:** PostgreSQL via Neon, table: `booking_sagas`  
 **Port:** `4005`
 
 ---
@@ -429,11 +468,12 @@ flowchart TB
 - Applies vehicle-specific base fare, per-km price, per-minute price, and multiplier.
 - Publishes fare calculation replies.
 - Publishes failure replies when fare calculation cannot complete.
+- Exposes `GET /metrics` for Prometheus scraping.
 
 **Routes:**
 
 - `GET /health`
-- No business HTTP route is currently mounted in `app.ts`; this service is currently Kafka-driven.
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -462,11 +502,13 @@ flowchart TB
 - Marks matched drivers as busy.
 - Releases drivers back to the pool when compensation or trip completion/cancellation occurs.
 - Publishes driver find replies.
+- Exposes `GET /metrics` for Prometheus scraping.
+- Tracks `driver_match_attempts_total`, `driver_match_success_total`, and `driver_match_failed_total` business metrics.
 
 **Routes:**
 
 - `GET /health`
-- No business HTTP route is currently mounted in `app.ts`; this service is currently Kafka-driven.
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -499,11 +541,13 @@ flowchart TB
 - Marks payments as `SUCCESS` or `FAILED`.
 - Publishes payment success or failure events.
 - Initiates refunds for successful payments when a trip is cancelled.
+- Exposes `GET /metrics` for Prometheus scraping.
+- Tracks `payment_success_total`, `payment_failed_total`, and `payment_amount_inr` business metrics.
 
 **Routes:**
 
 - `GET /health`
-- No business HTTP route is currently mounted in `app.ts`; this service is currently Kafka-driven.
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -516,7 +560,7 @@ flowchart TB
 - `payment.failed`
 
 **Technology:** Node.js + Express health endpoint + Drizzle ORM + PostgreSQL + Razorpay + Kafka packages  
-**Database:** PostgreSQL via `DB_NAME`, table: `payments`  
+**Database:** PostgreSQL via Neon, table: `payments`  
 **Port:** `4007`
 
 ---
@@ -535,11 +579,12 @@ flowchart TB
 - Sends payment success email.
 - Sends payment failed email.
 - Uses Gmail SMTP through Nodemailer.
+- Exposes `GET /metrics` for Prometheus scraping.
 
 **Routes:**
 
 - `GET /health`
-- No business HTTP route is currently mounted in `app.ts`; this service is currently Kafka-driven.
+- `GET /metrics`
 
 **Events Consumed:**
 
@@ -726,7 +771,6 @@ sequenceDiagram
     Trip-->>Gateway: Latest cached location
     Gateway-->>RiderApp: JSON response
 ```
-
 
 ## Design Patterns
 
@@ -997,8 +1041,128 @@ sequenceDiagram
 - Provides a foundation for readiness and liveness probes.
 
 ---
-+ ### 5. Planned Observability Additions
-+ The current implementation covers structured logging, request logging, centralized error handling, and health checks. The following are planned for the next phase:
-+ - **Distributed tracing** via OpenTelemetry and Jaeger...
-+ - **Metrics endpoint** via Prometheus...
-+ (etc.)
+
+### 5. Metrics Collection with Prometheus
+
+**Purpose:** Collect time-series metrics from all services for operational visibility and performance monitoring.
+
+**Where Used:** All services via `packages/observability` and Prometheus running in Docker.
+
+**Implementation:**
+
+- `packages/observability/src/metrics.ts` defines all metric types using `prom-client`.
+- `packages/observability/src/metrics.middleware.ts` provides a reusable Express middleware that automatically tracks HTTP request count and duration for every route.
+- Each service mounts the metrics middleware and exposes `GET /metrics` in its `app.ts`.
+- Prometheus scrapes `GET /metrics` from every service every 30 seconds using container DNS names defined in `prometheus.yml`.
+- Default metrics (CPU usage, memory heap, event loop lag, active handles) are collected automatically with zero extra code via `collectDefaultMetrics`.
+
+**Metric Types:**
+
+| Metric | Type | Where Tracked |
+|---|---|---|
+| `http_requests_total` | Counter | All services |
+| `http_request_duration_seconds` | Histogram | All services |
+| `nodejs_heap_used_bytes` | Gauge | All services (auto) |
+| `process_cpu_seconds_total` | Counter | All services (auto) |
+| `nodejs_event_loop_lag_seconds` | Gauge | All services (auto) |
+| `kafka_messages_consumed_total` | Counter | All services |
+| `kafka_message_processing_duration_seconds` | Histogram | All services |
+| `ride_requests_total` | Counter | Rider Service |
+| `saga_started_total` | Counter | Booking Saga Service |
+| `saga_confirmed_total` | Counter | Booking Saga Service |
+| `saga_failed_total` | Counter | Booking Saga Service |
+| `saga_duration_seconds` | Histogram | Booking Saga Service |
+| `active_trips` | Gauge | Trip Service |
+| `trip_completed_total` | Counter | Trip Service |
+| `trip_cancelled_total` | Counter | Trip Service |
+| `driver_match_attempts_total` | Counter | Matching Service |
+| `driver_match_success_total` | Counter | Matching Service |
+| `driver_match_failed_total` | Counter | Matching Service |
+| `payment_success_total` | Counter | Payment Service |
+| `payment_failed_total` | Counter | Payment Service |
+| `payment_amount_inr` | Histogram | Payment Service |
+
+**Example `/metrics` Output:**
+
+```
+# HELP http_requests_total Total number of HTTP requests
+# TYPE http_requests_total counter
+http_requests_total{method="POST",route="/v1/rides/request",status_code="201"} 124
+
+# HELP saga_confirmed_total Total sagas confirmed successfully
+# TYPE saga_confirmed_total counter
+saga_confirmed_total 98
+
+# HELP active_trips Number of currently active trips
+# TYPE active_trips gauge
+active_trips 7
+
+# HELP nodejs_heap_used_bytes Process heap space used in bytes
+# TYPE nodejs_heap_used_bytes gauge
+nodejs_heap_used_bytes 45234432
+```
+
+**Benefits:**
+
+- Single shared metrics setup in `packages/observability` means no duplication across services.
+- HTTP metrics tracked automatically via middleware without touching route handlers.
+- Business metrics give real insight into booking success rates, active trips, and payment health.
+- Prometheus stores time-series data that survives service restarts.
+
+---
+
+### 6. Dashboards with Grafana
+
+**Purpose:** Visualize Prometheus metrics as readable dashboards for operational awareness.
+
+**Where Used:** Grafana running in Docker, connected to Prometheus as a data source.
+
+**Implementation:**
+
+- Grafana runs on port `3100` and connects to Prometheus at `http://prometheus:9090`.
+- Dashboards are built using PromQL queries against the metrics exposed by each service.
+- Default credentials are `admin` / `admin`, configurable via environment variables.
+
+**Key Dashboard Panels and PromQL Queries:**
+
+```promql
+# Ride requests per minute
+rate(ride_requests_total[1m])
+
+# Booking success rate
+saga_confirmed_total / saga_started_total * 100
+
+# Average saga completion time
+rate(saga_duration_seconds_sum[5m]) / rate(saga_duration_seconds_count[5m])
+
+# Active trips right now
+active_trips
+
+# Payment success rate
+payment_success_total / (payment_success_total + payment_failed_total) * 100
+
+# Average HTTP response time per service
+rate(http_request_duration_seconds_sum[5m])
+/ rate(http_request_duration_seconds_count[5m])
+
+# Driver match failure rate
+rate(driver_match_failed_total[5m]) / rate(driver_match_attempts_total[5m]) * 100
+
+# 95th percentile saga duration
+histogram_quantile(0.95, rate(saga_duration_seconds_bucket[5m]))
+```
+
+**Suggested Dashboard Layout:**
+
+- Row 1 — System Health: CPU, memory, and event loop lag per service.
+- Row 2 — Booking Funnel: ride requests, saga starts, confirmations, and failures.
+- Row 3 — Trip Metrics: active trips, completions, and cancellations over time.
+- Row 4 — Payment Health: success rate, failure rate, and revenue distribution.
+- Row 5 — Matching Performance: match attempts, success rate, and average match time.
+
+**Benefits:**
+
+- Turns raw Prometheus numbers into visual graphs and gauges.
+- Makes system health visible at a glance without reading logs.
+- Supports alerting when metrics cross configured thresholds.
+- Gives a professional observability story for the project.
