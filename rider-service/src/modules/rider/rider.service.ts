@@ -17,6 +17,7 @@ import {
   publishRideCancelled,
   publishRideRequested,
 } from '../../events/producer/ride-request.producer';
+import { rideRequestsTotal } from '@cab/observability'
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 50;
@@ -328,7 +329,7 @@ export class RiderService {
         vehicleType,
       } = input;
       const riderId = await this.getRiderIdByUserId(userId);
-
+      rideRequestsTotal.inc()
       const existingRider = await db.select().from(rider).where(eq(rider.id, riderId));
       if (existingRider.length === 0) {
         logger.info({ existingRider }, 'rider not found');

@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 RUN npm install -g pnpm
 
@@ -19,7 +19,7 @@ RUN pnpm --filter @cab/observability build
 
 RUN pnpm --filter rider-service build
 
-FROM node:22-alpine AS production
+FROM node:20-alpine AS production
 
 RUN npm install -g pnpm
 

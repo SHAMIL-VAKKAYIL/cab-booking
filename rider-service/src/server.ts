@@ -9,10 +9,6 @@ import { startUserCreatedConsumer } from './events/consumers/user-created.consum
 const PORT = config.port;
 const start = async () => {
   try {
-    await startUserCreatedConsumer();
-    await startTripCompletedConsumer();
-
-    await connectProducer();
 
     await pool.connect();
     logger.info({}, 'database connected');
