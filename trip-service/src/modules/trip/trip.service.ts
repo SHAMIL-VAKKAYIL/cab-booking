@@ -16,6 +16,8 @@ import {
 } from "../../events/producer/trip.producer";
 import { io } from "../../server";
 
+import { activeTrips, tripCompletedTotal, tripCancelledTotal } from '@cab/observability'
+
 const LOCATION_UPDATE_SEC = 30;
 
 export class TripService {
@@ -28,7 +30,7 @@ export class TripService {
       driverId,
       pickupAddress,
       pickupLat,
-      pickupLng,
+      pickupLng, 
       dropoffAddress,
       dropoffLat,
       dropoffLng,
@@ -56,6 +58,8 @@ export class TripService {
       });
       return activeTrip;
     }
+
+    activeTrips.inc()
 
     const [trip] = await db
       .insert(trips)
@@ -103,6 +107,9 @@ export class TripService {
       );
       return;
     }
+
+    tripCancelledTotal.inc()
+    activeTrips.dec()
 
     const [updated] = await db
       .update(trips)
@@ -181,6 +188,9 @@ export class TripService {
     if (!finalFare || isNaN(fareAmount) || fareAmount <= 0) {
       throw new Error(`Trip has invalid fare: ${finalFare}`);
     }
+
+    tripCompletedTotal.inc()
+    activeTrips.dec()
 
     const [updated] = await db
       .update(trips)

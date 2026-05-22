@@ -35,15 +35,37 @@ io.on("connection", (socket) => {
     logger.info({ tripId, socketId: socket.id }, "user left trip");
   });
 
-  socket.on("update_location", async ({ tripId, driverId, lat, lng }: { tripId: string, driverId: string, lat: number, lng: number }) => {
-    try {
-      await tripService.updateLocation(tripId, lat, lng);
-      logger.info({ tripId, driverId, socketId: socket.id }, "location updated via socket");
-    } catch (error) {
-      logger.error({ error, tripId, driverId, socketId: socket.id }, "failed to update location via socket");
-      socket.emit("location_update_error", { tripId, error: (error as Error).message });
-    }
-  });
+  socket.on(
+    "update_location",
+    async ({
+      tripId,
+      driverId,
+      lat,
+      lng,
+    }: {
+      tripId: string;
+      driverId: string;
+      lat: number;
+      lng: number;
+    }) => {
+      try {
+        await tripService.updateLocation(tripId, lat, lng);
+        logger.info(
+          { tripId, driverId, socketId: socket.id },
+          "location updated via socket",
+        );
+      } catch (error) {
+        logger.error(
+          { error, tripId, driverId, socketId: socket.id },
+          "failed to update location via socket",
+        );
+        socket.emit("location_update_error", {
+          tripId,
+          error: (error as Error).message,
+        });
+      }
+    },
+  );
 
   socket.on("disconnect", () => {
     logger.info({ socketId: socket.id }, "user disconnected");
