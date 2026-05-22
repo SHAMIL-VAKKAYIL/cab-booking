@@ -8,6 +8,8 @@ import {
   publishPaymentFailed,
 } from "../../events/producers/payment.producer";
 
+import { paymentSuccessTotal, paymentFailedTotal, paymentAmount } from '@cab/observability'
+
 export class PaymentService {
   async processPayment(input: CreatePaymentInput) {
     const {
@@ -60,6 +62,7 @@ export class PaymentService {
           tripId,
           driverId,
           riderId,
+          riderEmail,
         },
       });
 
@@ -81,6 +84,9 @@ export class PaymentService {
         })
         .where(eq(payments.id, payment.id))
         .returning();
+
+      paymentSuccessTotal.inc()
+      paymentAmount.observe({amount: amount}, amount)
 
       logger.info(
         { tripId, paymentId: payment.id },
@@ -110,6 +116,8 @@ export class PaymentService {
         })
         .where(eq(payments.id, payment.id))
         .returning();
+
+      paymentFailedTotal.inc()
 
       // faildProducer
       await publishPaymentFailed({

@@ -19,7 +19,7 @@ export const handleRazorpay = async (req: Request, res: Response) => {
 
 export const getPaymentByTrip = async (req: Request, res: Response) => {
     try {
-      const { tripId } = req.params;
+      const tripId = req.params.tripId as string;
       const payment = await paymentService.getPaymentByTrip(tripId);
       return res.status(200).json(payment);
     } catch (error) {

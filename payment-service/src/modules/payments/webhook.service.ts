@@ -70,7 +70,7 @@ export class WebhookService {
       paymentId: updated.id,
       tripId: updated.tripId,
       riderId: updated.riderId,
-      riderEmail: updated.riderEmail,
+      riderEmail: paymentEntity.notes?.riderEmail,
       driverId: updated.driverId,
       amount: Number(updated.amount),
       currency: updated.currency,
@@ -113,7 +113,7 @@ export class WebhookService {
       paymentId: payment.id,
       tripId: payment.tripId,
       riderId: payment.riderId,
-      riderEmail: payment.riderEmail,
+      riderEmail: paymentEntity.notes?.riderEmail,
       reason: paymentEntity.error_description,
     });
 
