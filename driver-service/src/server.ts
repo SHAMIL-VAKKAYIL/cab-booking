@@ -1,3 +1,4 @@
+import http from 'http'
 import { app } from "./app";
 import { config } from "./config";
 import { logger } from "./config/logger";
@@ -6,6 +7,11 @@ import { connectRedis } from "./lib/redis";
 import { connectProducer } from "@cab/messaging";
 import { startUserCreatedSubscriber } from "./events/consumer/user-created.consumer";
 import { startDriverRatedConsumer } from "./events/consumer/driver-rated.consumer";
+import { notifyTripReqToDriver } from './events/consumer/driver-broadcast.consumer';
+import { initSocket } from './lib/socket';
+
+
+const server = http.createServer(app);
 
 const start = async () => {
   try {
@@ -17,14 +23,17 @@ const start = async () => {
     await pool.connect();
     logger.info("Database connected");
 
-    await startUserCreatedSubscriber(); 
+    await startUserCreatedSubscriber();
     await startDriverRatedConsumer();
+    await notifyTripReqToDriver()
     logger.info("Kafka consumers started");
 
     await connectRedis();
     logger.info("Redis connected");
+    
+    initSocket(server)
 
-    app.listen(config.port, () => {
+    server.listen(config.port, () => {
       logger.info(`Driver service running on port ${config.port}`);
     });
   } catch (error) {

@@ -9,11 +9,13 @@ import {
   UpdateVehicleInput,
   ToggleAvailabilityInput,
   UpdateRatingInput,
+  TripBroadCastInput,
 } from "../../types";
 import {
   publishDriverOnline,
   publishDriverOffline,
 } from "../../events/producer/driver.producer";
+import { getIO } from "../../lib/socket";
 
 export class DriverService {
   async createDriver(data: CreateDriverInput) {
@@ -134,7 +136,9 @@ export class DriverService {
         lng,
       });
 
+
       logger.info({ userId, driverId: currentDriver.user_id }, "Driver online");
+      return { ...updated, socketAction: 'CONNECT' as const }
     } else {
       // remove from Redis when going offline
       await redis.zRem(DRIVER_LOCATION_KEY, currentDriver.user_id);
@@ -144,9 +148,8 @@ export class DriverService {
       });
 
       logger.info({ userId, driverId: currentDriver.user_id }, "Driver offline");
+      return { ...updated, socketAction: 'DISCONNECT' as const };
     }
-
-    return updated;
   }
 
   async getProfile(userId: string) {
@@ -207,5 +210,17 @@ export class DriverService {
       { driverId, averageRating, totalRatings },
       "Driver rating updated",
     );
+  }
+  async broadCastTripRequst(data: TripBroadCastInput) {
+    const io = getIO()
+    for (const driverId of data.drivers) {
+      io.to(driverId).emit('ride_request', {
+        rideId: data.rideId,
+        vehicleType:data.vehicleType,
+        pickupAddress: data.pickupAddress,
+        estimatedFare: data.estimatedFare,
+        expiresIn: data.expiresIn,
+      })
+    }
   }
 }

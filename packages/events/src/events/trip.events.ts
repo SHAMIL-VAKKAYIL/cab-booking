@@ -39,6 +39,22 @@ export interface TripCreateReplyEvent {
   };
 }
 
+export interface TripAcceptEvent {
+  event: "DRIVER_FIND_COMMAND";
+  data: {
+    correlationId: string;
+    rideId: string;
+    driverId: string;
+    vehicleType: 'ECONOMY' | 'PREMIUM';
+    occurredAt: string;
+  };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+
 export interface TripStartedEvent {
   event: "TRIP_STARTED";
   data: {

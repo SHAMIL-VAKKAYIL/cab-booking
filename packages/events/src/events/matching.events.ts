@@ -1,15 +1,32 @@
-export interface DriverFindCommandEvent {
-  event: "DRIVER_FIND_COMMAND";
+export interface DriverBroadcastCommandEvent {
+  event: "DRIVER_BROADCAST_COMMAND";
   data: {
     correlationId: string;
     rideId: string;
     riderId: string;
     pickupLat: number;
     pickupLng: number;
+    pickupAddress: string;
+    estimatedFare: number;
     vehicleType: "ECONOMY" | "PREMIUM";
     radiusKm?: number;
     occurredAt: string;
   };
+  metadata: {
+    correlationId: string;
+    source: string;
+    version: number;
+  };
+}
+export interface DriverFindCommandEvent {
+  event: "DRIVER_FIND_COMMAND",
+  data: {
+    correlationId: string;
+    rideId: string;
+    driverId: string;
+    vehicleType: "ECONOMY" | "PREMIUM";
+    occurredAt: string;
+  },
   metadata: {
     correlationId: string;
     source: string;

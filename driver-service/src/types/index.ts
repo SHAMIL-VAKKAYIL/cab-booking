@@ -28,3 +28,11 @@ export interface UpdateRatingInput {
   driverId: string;
   score: number;
 }
+export interface TripBroadCastInput {
+  rideId: string
+  vehicleType?: "ECONOMY" | "PREMIUM";
+  pickupAddress: string
+  estimatedFare: number
+  drivers: string[]
+  expiresIn: number
+}

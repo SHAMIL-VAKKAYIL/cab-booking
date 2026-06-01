@@ -8,12 +8,26 @@ export const startTrip = async (req: Request, res: Response, next: NextFunction)
     try {
         const driverId = req.headers['user-id'] as string
         const { tripId } = req.params as { tripId: string }
-        logger.info({driverId,tripId},'sdfsfs')
+        logger.info({ driverId, tripId }, 'sdfsfs')
         const trip = await tripService.startTrip(tripId, driverId)
         res.status(200).json({ data: trip })
     } catch (err) {
         next(err)
     }
+}
+
+export const acceptRide = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const driverId = req.headers['user-id'] as string
+        const { rideId, vehicleType } = req.params as { rideId: string, vehicleType: 'ECONOMY' | 'PREMIUM' }
+        const accessTrip = await tripService.driverAcceptTrip(driverId, rideId, vehicleType)
+        res.status(200).json({ data: 'accessing trip' })
+
+
+    } catch (error) {
+        next(error)
+    }
+
 }
 
 export const completeTrip = async (req: Request, res: Response, next: NextFunction) => {

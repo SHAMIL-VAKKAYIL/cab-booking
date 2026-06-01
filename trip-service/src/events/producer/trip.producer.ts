@@ -1,5 +1,5 @@
 import { publishEvent } from '@cab/messaging'
-import { Topics, TripCreateReplyEvent, TripStartedEvent, TripCompletedEvent, TripCancelledEvent } from '@cab/events'
+import { Topics, TripCreateReplyEvent, TripStartedEvent, TripCompletedEvent, TripCancelledEvent, TripAcceptEvent } from '@cab/events'
 import { randomUUID } from 'crypto'
 
 
@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto'
 export const publishTripCreateReply = async (payload: {
     correlationId: string
     tripId: string
-    rideId:string
+    rideId: string
     success: boolean
     reason?: string
 }) => {
@@ -24,6 +24,29 @@ export const publishTripCreateReply = async (payload: {
         }
     }
     await publishEvent(Topics.TRIP_CREATE_REPLY, event)
+}
+
+export const publishTripAccept = async (payload: {
+    correlationId: string
+    rideId: string
+    driverId: string
+    vehicleType: 'ECONOMY' | 'PREMIUM'
+}) => {
+    const event: TripAcceptEvent = {
+        event: 'DRIVER_FIND_COMMAND',
+        data: {
+            rideId: payload.rideId,
+            driverId: payload.driverId,
+            vehicleType: payload.vehicleType,
+            occurredAt: new Date().toISOString(),
+        },
+        metadata: {
+            correlationId: payload.correlationId,
+            source: 'trip-service',
+            version: 1
+        }
+    }
+    await publishEvent(Topics.DRIVER_FIND_COMMAND, event)
 }
 
 export const publishTripStarted = async (payload: {

@@ -1,4 +1,5 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { randomUUID } from "crypto";
 import { db } from "../../db";
 import { trips } from "../../db/schema";
 import { redis } from "../../lib/redis";
@@ -13,6 +14,7 @@ import {
   publishTripStarted,
   publishTripCompleted,
   publishTripCancelled,
+  publishTripAccept,
 } from "../../events/producer/trip.producer";
 import { io } from "../../server";
 
@@ -30,7 +32,7 @@ export class TripService {
       driverId,
       pickupAddress,
       pickupLat,
-      pickupLng, 
+      pickupLng,
       dropoffAddress,
       dropoffLat,
       dropoffLng,
@@ -140,13 +142,6 @@ export class TripService {
   }
 
   async startTrip(tripId: string, driverId: string) {
-    const trip = await this.findById(tripId);
-    logger.info({ trip },'sdsdsds');
-    if (!trip) throw new Error("Trip not found");
-    if (trip.driverId !== driverId) throw new Error("Forbidden");
-    if (trip.status !== "MATCHED") {
-      throw new Error(`Cannot start trip with status ${trip.status}`);
-    }
 
     const [updated] = await db
       .update(trips)
@@ -155,8 +150,20 @@ export class TripService {
         startedAt: new Date(),
         updatedAt: new Date(),
       })
-      .where(eq(trips.id, tripId))
+      .where(
+        and(
+          eq(trips.id, tripId),
+          eq(trips.driverId, driverId),
+          eq(trips.status, "MATCHED")
+        )
+      )
       .returning();
+    if (!updated) {
+      const trip = await this.findById(tripId);
+      if (!trip) throw new Error("Trip not found");
+      if (trip.driverId !== driverId) throw new Error("Forbidden");
+      throw new Error(`Cannot start trip with status ${trip.status}`);
+    }
 
     await publishTripStarted({
       tripId: updated.id,
@@ -168,6 +175,36 @@ export class TripService {
 
     logger.info({ tripId }, "Trip started");
     return updated;
+  }
+
+  async driverAcceptTrip(driverId: string, rideId: string, vehicleType: 'ECONOMY' | 'PREMIUM',) {
+    //!  claim the driver atomically
+    const driverLocked = await redis.set(
+      `driver:busy:${driverId}`,
+      rideId,
+      { NX: true, EX: 3600 }
+    )
+
+    if (!driverLocked) {
+      throw new Error('You are already on a ride')
+    }
+    const rideClaimed = await redis.set(
+      `ride:claimed:${rideId}`,
+      driverId,
+      { NX: true, EX: 60 }
+    )
+
+    if (!rideClaimed) {
+      //! release driver lock since ride is already taken
+      await redis.del(`driver:busy:${driverId}`)
+      throw new Error('Ride already accepted by another driver')
+    }
+    await publishTripAccept({
+      correlationId: randomUUID(),
+      rideId,
+      driverId,
+      vehicleType: vehicleType
+    });
   }
 
   async completeTrip(input: CompleteTripInput) {
@@ -184,7 +221,7 @@ export class TripService {
     //! pricing-service will refine this later
     const finalFare = trip.estimatedFare;
     const fareAmount = Number(finalFare);
-    
+
     if (!finalFare || isNaN(fareAmount) || fareAmount <= 0) {
       throw new Error(`Trip has invalid fare: ${finalFare}`);
     }

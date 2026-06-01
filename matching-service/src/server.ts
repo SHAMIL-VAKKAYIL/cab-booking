@@ -4,7 +4,7 @@ import { config } from './config'
 import { logger } from './config/logger'
 import { connectRedis } from './lib/redis'
 import { connectProducer } from '@cab/messaging'
-import { startDriverFindConsumer }    from './events/consumers/driver-find.consumer'
+import { startDriverFindingConsumer }    from './events/consumers/driver-broadcast.consumer'
 import { startDriverOnlineConsumer }  from './events/consumers/driver-online.consumer'
 import { startDriverOfflineConsumer } from './events/consumers/driver-offline.consumer'
 import { startDriverReleaseConsumer } from './events/consumers/driver-release.consumer'
@@ -19,7 +19,7 @@ const start = async () => {
     await connectProducer()
     logger.info('Kafka producer connected')
 
-    await startDriverFindConsumer()
+    await startDriverFindingConsumer()
     await startDriverOnlineConsumer()
     await startDriverOfflineConsumer()
     await startDriverReleaseConsumer()

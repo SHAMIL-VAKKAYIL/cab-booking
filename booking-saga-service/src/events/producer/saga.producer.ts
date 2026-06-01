@@ -29,10 +29,12 @@ export const publishDriverFindCommand = async (payload: {
   riderId: string;
   pickupLat: number;
   pickupLng: number;
+  pickupAddress: string;
+  estimatedFare: number;
   vehicleType: string;
 }) => {
-  await publishEvent(Topics.DRIVER_FIND_COMMAND, {
-    event: "DRIVER_FIND_COMMAND",
+  await publishEvent(Topics.DRIVER_BROADCAST_COMMAND, {
+    event: "DRIVER_BROADCAST_COMMAND",
     data: { ...payload, occurredAt: new Date().toISOString() },
     metadata: {
       correlationId: payload.correlationId,

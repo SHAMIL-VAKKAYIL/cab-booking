@@ -127,6 +127,8 @@ export class SagaService {
       correlationId: rideId,
       rideId,
       riderId: saga.riderId,
+      pickupAddress: saga.pickupAddress,        
+      estimatedFare: Number(saga.estimatedFare),
       pickupLat: Number(saga.pickupLat),
       pickupLng: Number(saga.pickupLng),
       vehicleType: saga.vehicleType,

@@ -14,8 +14,8 @@ const SEARCH_COUNT = 20; // fetch top 20 nearest, then filter
 
 export class MatchingService {
 
-  async findNearestDriver(input: FindDriverInput): Promise<string | null> {
-  driverMatchAttempts.inc()
+  async findNearestDriver(input: FindDriverInput): Promise<string[] | null> {
+    driverMatchAttempts.inc()
     const {
       pickupLat,
       pickupLng,
@@ -45,7 +45,7 @@ export class MatchingService {
       }
       driverMatchFailed.inc()
 
-      return null
+      return []
     }
 
     const [availableDrivers, vehicleDrivers] = await Promise.all([
@@ -54,27 +54,26 @@ export class MatchingService {
     ])
 
     const availableSet = new Set(availableDrivers)
-    const vehicleSet   = new Set(vehicleDrivers)
+    const vehicleSet = new Set(vehicleDrivers)
 
     //! find first driver that is both available and has correct vehicle type
-    
 
-    const matchedDriverId = nearbyDrivers.find(
+    const candidates = nearbyDrivers.filter(
       driverId => availableSet.has(driverId) && vehicleSet.has(driverId)
     )
 
-    if (!matchedDriverId) {
+    if (candidates.length === 0) {
       logger.warn({ vehicleType, nearbyCount: nearbyDrivers.length }, 'No available drivers with matching vehicle type')
       driverMatchFailed.inc()
-      return null
+      return []
     }
 
     driverMatchSuccess.inc()
+    logger.info({ count: candidates.length, vehicleType }, 'Driver candidates found')
+    return candidates
+  }         
 
-    logger.info({ matchedDriverId, vehicleType }, 'Driver found')
-    return matchedDriverId
-  }
-
+  
   async markDriverBusy(driverId: string, vehicleType: string) {
     //! remove from available — keep in locations so trip tracking still works
     await Promise.all([
@@ -99,8 +98,8 @@ export class MatchingService {
     await Promise.all([
       redis.geoAdd(DRIVER_LOCATIONS_KEY, {
         longitude: lng,
-        latitude:  lat,
-        member:    driverId
+        latitude: lat,
+        member: driverId
       }),
       redis.sAdd(DRIVER_AVAILABLE_KEY, driverId),
       redis.sAdd(DRIVER_VEHICLE_KEY(vehicleType), driverId),

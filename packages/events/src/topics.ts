@@ -16,10 +16,12 @@ export const Topics = {
   FARE_CALCULATE_COMMAND: "fare.calculate.command",
   FARE_CALCULATE_REPLY: "fare.calculate.reply",
   DRIVER_FIND_COMMAND: "driver.find.command",
+  DRIVER_BROADCAST_COMMAND: "driver.broadcast.command",
   DRIVER_FIND_REPLY: "driver.find.reply",
   DRIVER_RELEASE_COMMAND: "driver.release.command",
   BOOKING_CONFIRMED: "booking.confirmed",
   BOOKING_FAILED: "booking.failed",
   PAYMENT_SUCCESS: "payment.success",
   PAYMENT_FAILED: "payment.failed",
+  DRIVER_BROADCAST:"driver.broadcast"
 } as const;

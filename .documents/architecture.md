@@ -354,6 +354,8 @@ flowchart TB
 
 - `user.created`
 - `driver.rated`
+- `driver.brodcast`
+- `driver.broadcast.command`
 
 **Events Published:**
 
@@ -387,6 +389,7 @@ flowchart TB
 - `GET /v1/trips/:tripId`
 - `POST /v1/trips/:tripId/start`
 - `POST /v1/trips/:tripId/complete`
+- `POST /v1/trips/:rideId/:vehicleType/accept`
 - `POST /v1/trips/:tripId/location`
 - `GET /v1/trips/:tripId/location`
 - `GET /v1/trips/active`
@@ -444,7 +447,7 @@ flowchart TB
 **Events Published:**
 
 - `fare.calculate.command`
-- `driver.find.command`
+- `driver.broadcast.command`
 - `trip.create.command`
 - `driver.release.command`
 - `booking.confirmed`
@@ -512,16 +515,19 @@ flowchart TB
 
 **Events Consumed:**
 
-- `driver.find.command`
 - `driver.online`
 - `driver.offline`
 - `driver.release.command`
 - `trip.cancelled`
 - `trip.completed`
+- `driver.brodcast`
+
 
 **Events Published:**
 
 - `driver.find.reply`
+- `driver.find.command`
+
 
 **Technology:** Node.js + Express health endpoint + Redis + Kafka packages  
 **Database:** Redis only  
