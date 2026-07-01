@@ -35,6 +35,7 @@ export const publishTripAccept = async (payload: {
     const event: TripAcceptEvent = {
         event: 'DRIVER_FIND_COMMAND',
         data: {
+            correlationId: payload.correlationId,
             rideId: payload.rideId,
             driverId: payload.driverId,
             vehicleType: payload.vehicleType,

@@ -10,4 +10,5 @@ pnpm-lock.yaml
 #Builds
 dist/
 
-.documents
+frontend/
+k6/
